@@ -1,9 +1,51 @@
-import { Button, Checkbox, Form, Input } from "antd";
+import { Button, Form, Input, Typography } from "antd";
 import { NextPage } from "next";
+import Link from "next/link";
+import { useState } from "react";
+
+const { Title } = Typography;
+
+const styles = {
+  container: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100vh",
+
+    background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
+  },
+  form: {
+    backgroundColor: "white",
+    padding: "2rem",
+    boxShadow: "0 0 10px 5px rgba(0, 0, 0, 0.2)",
+    height: "fit-content",
+    maxWidth: "600px",
+    width: "100%",
+  },
+  submitButton: {
+    width: "100%",
+  },
+};
+
+type LoginErrorType = {
+  username?: String;
+  password?: String;
+};
 
 const Login: NextPage = () => {
-  const onFinish = (values: any) => {
+  const [errors, setErrors] = useState<LoginErrorType>({});
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const onFinish = async (values: any) => {
     console.log("Success:", values);
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setErrors({
+        username: "Username is not correct",
+        password: "Password is aaaaa",
+      });
+    }, 2000);
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -11,24 +53,28 @@ const Login: NextPage = () => {
   };
 
   return (
-    <div>
-      <Form name="basic" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} initialValues={{ remember: true }} onFinish={onFinish} onFinishFailed={onFinishFailed} autoComplete="off">
-        <Form.Item label="Username" name="username" rules={[{ required: true, message: "Please input your username!" }]}>
+    <div style={styles.container}>
+      <Form name="basic" initialValues={{ remember: true }} size="large" onFinish={onFinish} onFinishFailed={onFinishFailed} autoComplete="off" layout="vertical" style={styles.form}>
+        <Title style={{ textAlign: "center" }}>Login</Title>
+        <Form.Item label="Username" name="username" rules={[{ required: true, message: "Please input your username!" }]} help={errors.username} validateStatus={errors.username ? "error" : ""}>
           <Input />
         </Form.Item>
 
-        <Form.Item label="Password" name="password" rules={[{ required: true, message: "Please input your password!" }]}>
+        <Form.Item label="Password" name="password" rules={[{ required: true, message: "Please input your password!" }]} help={errors.password} validateStatus={errors.password ? "error" : ""}>
           <Input.Password />
         </Form.Item>
 
-        <Form.Item name="remember" valuePropName="checked" wrapperCol={{ offset: 8, span: 16 }}>
+        {/* <Form.Item name="remember" valuePropName="checked" wrapperCol={{ offset: 8, span: 16 }}>
           <Checkbox>Remember me</Checkbox>
-        </Form.Item>
+        </Form.Item> */}
 
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-          <Button type="primary" htmlType="submit">
+        <Form.Item>
+          <Button type="primary" htmlType="submit" style={styles.submitButton} loading={loading}>
             Submit
           </Button>
+        </Form.Item>
+        <Form.Item style={{ textAlign: "right" }}>
+          Or <Link href="/register">register now!</Link>
         </Form.Item>
       </Form>
     </div>

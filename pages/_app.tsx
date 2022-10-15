@@ -9,7 +9,7 @@ import { useRouter } from "next/router";
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();
-  const layoutExceptionRoutes = ["/login", "/register"];
+  const layoutExceptionRoutes = ["/login", "/register", "/404"];
   const shouldShowHeader = !layoutExceptionRoutes.includes(pathname);
 
   return (
@@ -18,7 +18,7 @@ export default function MyApp({ Component, pageProps }: AppProps) {
       <Content>
         <Component {...pageProps} />
       </Content>
-      <Footer>Footer</Footer>
+      {shouldShowHeader && <Footer>Footer</Footer>}
     </Layout>
   );
 }
