@@ -5,8 +5,8 @@ export default class MyDocument extends Document {
     return (
       <Html>
         <Head>
-          <meta charSet="utf-8" />
-          <link rel="shortcut icon" type="images/x-icon" href="/favicon.ico" />
+          <meta charSet='utf-8' />
+          <link rel='shortcut icon' type='images/x-icon' href='/favicon.ico' />
         </Head>
         <body>
           <Main />

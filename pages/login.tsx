@@ -54,13 +54,31 @@ const Login: NextPage = () => {
 
   return (
     <div style={styles.container}>
-      <Form name="basic" initialValues={{ remember: true }} size="large" onFinish={onFinish} onFinishFailed={onFinishFailed} autoComplete="off" layout="vertical" style={styles.form}>
+      <Form
+        name='basic'
+        initialValues={{ remember: true }}
+        size='large'
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+        autoComplete='off'
+        layout='vertical'
+        style={styles.form}>
         <Title style={{ textAlign: "center" }}>Login</Title>
-        <Form.Item label="Username" name="username" rules={[{ required: true, message: "Please input your username!" }]} help={errors.username} validateStatus={errors.username ? "error" : ""}>
+        <Form.Item
+          label='Username'
+          name='username'
+          rules={[{ required: true, message: "Please input your username!" }]}
+          help={errors.username}
+          validateStatus={errors.username ? "error" : ""}>
           <Input />
         </Form.Item>
 
-        <Form.Item label="Password" name="password" rules={[{ required: true, message: "Please input your password!" }]} help={errors.password} validateStatus={errors.password ? "error" : ""}>
+        <Form.Item
+          label='Password'
+          name='password'
+          rules={[{ required: true, message: "Please input your password!" }]}
+          help={errors.password}
+          validateStatus={errors.password ? "error" : ""}>
           <Input.Password />
         </Form.Item>
 
@@ -69,12 +87,12 @@ const Login: NextPage = () => {
         </Form.Item> */}
 
         <Form.Item>
-          <Button type="primary" htmlType="submit" style={styles.submitButton} loading={loading}>
+          <Button type='primary' htmlType='submit' style={styles.submitButton} loading={loading}>
             Submit
           </Button>
         </Form.Item>
         <Form.Item style={{ textAlign: "right" }}>
-          Or <Link href="/register">register now!</Link>
+          Or <Link href='/register'>register now!</Link>
         </Form.Item>
       </Form>
     </div>
