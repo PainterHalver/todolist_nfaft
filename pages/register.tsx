@@ -2,6 +2,7 @@ import { Button, Form, Input, Typography } from "antd";
 import { NextPage } from "next";
 import Link from "next/link";
 import { useState } from "react";
+import axios, { AxiosError } from "axios";
 
 const { Title } = Typography;
 
@@ -34,20 +35,30 @@ type RegisterErrorType = {
   password?: String;
 };
 
+type RegisterData = {
+  email: String;
+  username: String;
+  password: String;
+  confirmPassword: String;
+};
+
 const Register: NextPage = () => {
   const [errors, setErrors] = useState<RegisterErrorType>({});
   const [loading, setLoading] = useState<boolean>(false);
 
-  const onFinish = async (values: any) => {
-    console.log("Success:", values);
+  const onFinish = async (data: RegisterData) => {
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const res = await axios.post("/auth/register", data);
+      console.log(res);
+    } catch (error: unknown | AxiosError) {
+      console.log(error);
+      if (axios.isAxiosError(error)) {
+        setErrors(error.response?.data.errors);
+      }
+    } finally {
       setLoading(false);
-      setErrors({
-        username: "Username is not correct",
-        password: "Password is aaaaa",
-      });
-    }, 2000);
+    }
   };
 
   return (

@@ -1,11 +1,12 @@
 import type { AppProps } from "next/app";
 import "../styles/globals.css";
-
 import { Layout } from "antd";
 const { Header, Content, Footer } = Layout;
-
 import "antd/dist/antd.css";
 import { useRouter } from "next/router";
+import axios from "axios";
+
+axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL;
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();

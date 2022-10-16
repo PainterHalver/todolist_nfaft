@@ -10,14 +10,7 @@ const Home: NextPage = () => {
     setDate(value);
   };
 
-  return (
-    <div style={{ width: 400, margin: "100px auto" }}>
-      <DatePicker onChange={handleChange} />
-      <div style={{ marginTop: 350 }}>
-        <Alert message='Selected Date' description={date ? date.format("YYYY-MM-DD") : "None"} />
-      </div>
-    </div>
-  );
+  return <div style={{ width: 400, margin: "100px auto" }}></div>;
 };
 
 export default Home;
