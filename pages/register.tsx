@@ -28,13 +28,14 @@ const styles = {
   },
 };
 
-type LoginErrorType = {
+type RegisterErrorType = {
+  email?: String;
   username?: String;
   password?: String;
 };
 
-const Login: NextPage = () => {
-  const [errors, setErrors] = useState<LoginErrorType>({});
+const Register: NextPage = () => {
+  const [errors, setErrors] = useState<RegisterErrorType>({});
   const [loading, setLoading] = useState<boolean>(false);
 
   const onFinish = async (values: any) => {
@@ -49,22 +50,33 @@ const Login: NextPage = () => {
     }, 2000);
   };
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log("Failed:", errorInfo);
-  };
-
   return (
     <div style={styles.container}>
       <Form
-        name='login'
+        name='register'
         initialValues={{ remember: true }}
         size='large'
         onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
         autoComplete='off'
         layout='vertical'
         style={styles.form}>
-        <Title style={{ textAlign: "center" }}>Login</Title>
+        <Title style={{ textAlign: "center" }}>Register</Title>
+        <Form.Item
+          label='Email'
+          name='email'
+          rules={[
+            { required: true, message: "Please input your email!" },
+            {
+              type: "email",
+              message: "Please input a valid email!",
+              validateTrigger: "onChange", // onBlur is not working
+            },
+          ]}
+          help={errors.email}
+          validateStatus={errors.email ? "error" : ""}>
+          <Input onChange={() => setErrors({ ...errors, email: undefined })} />
+        </Form.Item>
+
         <Form.Item
           label='Username'
           name='username'
@@ -82,6 +94,25 @@ const Login: NextPage = () => {
           validateStatus={errors.password ? "error" : ""}>
           <Input.Password onChange={() => setErrors({ ...errors, password: undefined })} />
         </Form.Item>
+        <Form.Item
+          label='Confirm Password'
+          name='confirmPassword'
+          dependencies={["password"]}
+          rules={[
+            { required: true, message: "Please reenter your password!" },
+            (form) => ({
+              validator(_, value) {
+                if (!value || form.getFieldValue("password") === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject("Passwords do not match!");
+              },
+            }),
+          ]}
+          help={errors.password}
+          validateStatus={errors.password ? "error" : ""}>
+          <Input.Password onChange={() => setErrors({ ...errors, password: undefined })} />
+        </Form.Item>
 
         {/* <Form.Item name="remember" valuePropName="checked" wrapperCol={{ offset: 8, span: 16 }}>
           <Checkbox>Remember me</Checkbox>
@@ -89,15 +120,15 @@ const Login: NextPage = () => {
 
         <Form.Item>
           <Button type='primary' htmlType='submit' style={styles.submitButton} loading={loading}>
-            Login
+            Register
           </Button>
         </Form.Item>
         <Form.Item style={{ textAlign: "right" }}>
-          Or <Link href='/register'>register now!</Link>
+          Or <Link href='/login'>login now!</Link>
         </Form.Item>
       </Form>
     </div>
   );
 };
 
-export default Login;
+export default Register;
