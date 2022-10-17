@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Email validation
     if (!email || !email.trim()) errors["email"] = "Email must not be empty";
     else {
-      const emailUser = await prisma.user.findUnique({
+      const emailUser = await prisma.user.findFirst({
         where: {
           email,
         },
@@ -31,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Username validation
     if (!username || !username.trim()) errors["username"] = "Username must not be empty";
     else {
-      const usernameUser = await prisma.user.findUnique({
+      const usernameUser = await prisma.user.findFirst({
         where: {
           username,
         },
