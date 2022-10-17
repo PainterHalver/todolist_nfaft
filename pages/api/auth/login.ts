@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../prisma/prisma";
+import prisma from "../../../lib/prisma";
 import crypto from "crypto";
 
 type LoginErrorType = {

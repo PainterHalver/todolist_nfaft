@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import prisma from "../../../prisma/prisma";
+import prisma from "../../../lib/prisma";
 
 type RegisterErrorType = {
   email?: String;
