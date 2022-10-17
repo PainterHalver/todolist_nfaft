@@ -6,17 +6,17 @@ async function main() {
     {
       email: "john@test.com",
       username: "john",
-      password: "1111",
+      password: "b59c67bf196a4758191e42f76670ceba", // 1111
     },
     {
       email: "jane@test.com",
       username: "jane",
-      password: "1111",
+      password: "b59c67bf196a4758191e42f76670ceba", // 1111
     },
     {
       email: "calputer@test.com",
       username: "calputer",
-      password: "1111",
+      password: "b59c67bf196a4758191e42f76670ceba", // 1111
     },
   ];
 

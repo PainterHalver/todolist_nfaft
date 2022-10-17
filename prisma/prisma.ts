@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import crypto from "crypto";
 
 declare global {
   // allow global `var` declarations
@@ -13,5 +14,15 @@ const prisma =
   });
 
 if (process.env.NODE_ENV !== "production") global.prisma = prisma;
+
+// Middleware
+
+// Post Create User hash password
+prisma.$use(async (params, next) => {
+  if (params.model === "User" && params.action.match(/create|update|upsert/)) {
+    params.args.data.password = crypto.createHash("md5").update(params.args.data.password).digest("hex");
+  }
+  return next(params);
+});
 
 export default prisma;
