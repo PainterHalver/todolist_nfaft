@@ -1,4 +1,4 @@
-import { Button, Form, Input, Typography } from "antd";
+import { Button, Form, Input, Typography, message } from "antd";
 import { NextPage } from "next";
 import Link from "next/link";
 import { useState } from "react";
@@ -11,7 +11,9 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "100vh",
+    minHeight: "100vh",
+    height: "100%",
+    padding: "2rem 0",
 
     background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
   },
@@ -47,15 +49,18 @@ const Register: NextPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const onFinish = async (data: RegisterData) => {
+    message.loading({ content: "Loading...", key: "register" });
     setLoading(true);
     try {
       const res = await axios.post("/auth/register", data);
+      message.success({ content: "Successfully registed!", key: "register" });
       console.log(res);
     } catch (error: unknown | AxiosError) {
       console.log(error);
       if (axios.isAxiosError(error)) {
         setErrors(error.response?.data.errors);
       }
+      message.error({ content: "Failed to register!", key: "register" });
     } finally {
       setLoading(false);
     }

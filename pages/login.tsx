@@ -10,7 +10,9 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "100vh",
+    minHeight: "100vh",
+    height: "100%",
+    padding: "2rem 0",
 
     background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
   },

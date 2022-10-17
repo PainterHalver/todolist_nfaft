@@ -6,7 +6,9 @@ const styles = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    height: "100vh",
+    minHeight: "100vh",
+    height: "100%",
+    padding: "2rem 0",
     flexDirection: "column",
 
     background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
@@ -19,7 +21,7 @@ const styles = {
   },
 };
 
-export default function ErrorPage(props: any) {
+export default function ErrorPage() {
   return (
     <div style={styles.container as CSSProperties}>
       <Typography.Title style={styles.title}>404</Typography.Title>

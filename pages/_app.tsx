@@ -5,8 +5,13 @@ const { Header, Content, Footer } = Layout;
 import "antd/dist/antd.css";
 import { useRouter } from "next/router";
 import axios from "axios";
+import { message } from "antd";
 
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL;
+
+message.config({
+  duration: 2,
+});
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();

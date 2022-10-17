@@ -14,24 +14,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     const errors: RegisterErrorType = {};
     // Validate the data
-    if (email.trim() === "") errors["email"] = "Email must not be empty";
-    if (!password.trim()) errors["password"] = "Password must not be empty";
+    if (!password || !password.trim()) errors["password"] = "Password must not be empty";
     if (password !== confirmPassword) errors["password"] = "Passwords do not match";
 
-    // Check for existing user
-    const emailUser = await prisma.user.findUnique({
-      where: {
-        email,
-      },
-    });
-    const usernameUser = await prisma.user.findUnique({
-      where: {
-        username,
-      },
-    });
+    // Email validation
+    if (!email || !email.trim()) errors["email"] = "Email must not be empty";
+    else {
+      const emailUser = await prisma.user.findUnique({
+        where: {
+          email,
+        },
+      });
+      if (emailUser) errors["email"] = "Email already exists";
+    }
 
-    if (emailUser) errors["email"] = "Email already exists";
-    if (usernameUser) errors["username"] = "Username already exists";
+    // Username validation
+    if (!username || !username.trim()) errors["username"] = "Username must not be empty";
+    else {
+      const usernameUser = await prisma.user.findUnique({
+        where: {
+          username,
+        },
+      });
+      if (usernameUser) errors["username"] = "Username already exists";
+    }
 
     if (Object.keys(errors).length > 0) {
       return res.status(400).json({ message: "Bad Request", errors });
