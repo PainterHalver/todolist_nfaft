@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-
+import jwt from "jsonwebtoken";
 import prisma from "../../../lib/prisma";
 
 type RegisterErrorType = {
@@ -9,6 +9,10 @@ type RegisterErrorType = {
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Method not allowed" });
+  }
+
   try {
     const { email, password, username, confirmPassword } = req.body;
 
@@ -52,8 +56,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       },
     });
 
+    // Generate JWT
+    const token = jwt.sign(
+      { username: newUser.username, email: newUser.email, id: newUser.id },
+      process.env.JWT_SECRET!
+    );
+
     // Return user
-    return res.status(201).json({ message: "success", user: newUser });
+    return res.status(201).json({ message: "success", user: newUser, token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

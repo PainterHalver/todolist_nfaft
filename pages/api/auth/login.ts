@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "../../../lib/prisma";
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
 
 type LoginErrorType = {
   username?: String;
@@ -8,6 +9,10 @@ type LoginErrorType = {
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  if (req.method !== "POST") {
+    return res.status(405).json({ message: "Method not allowed" });
+  }
+
   try {
     const { username, password } = req.body;
 
@@ -35,9 +40,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
+    // Generate JWT
+    const token = jwt.sign({ username: user.username, email: user.email, id: user.id }, process.env.JWT_SECRET!);
+
     // Return user
     // TODO: Better way to hide password
-    return res.status(200).json({ message: "success", user: { ...user, password: undefined } });
+    return res.status(200).json({ message: "success", user: { ...user, password: undefined }, token });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

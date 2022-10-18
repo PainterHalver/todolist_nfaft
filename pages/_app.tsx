@@ -7,6 +7,8 @@ import { useRouter } from "next/router";
 import axios from "axios";
 import { motion, AnimatePresence, Variants } from "framer-motion";
 import { CSSProperties } from "react";
+import { Provider } from "react-redux";
+import store from "../redux/store";
 
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -54,24 +56,28 @@ export default function MyApp({ Component, pageProps, router }: AppProps) {
   const layoutExceptionRoutes = ["/login", "/register", "/404"];
   const shouldShowHeader = !layoutExceptionRoutes.includes(pathname);
 
+  // TODO: Fetch user data when the app (re)loads
+
   return (
-    <Layout style={styles.layout}>
-      {shouldShowHeader && <Header>Header</Header>}
-      <AnimatePresence mode='wait'>
-        <motion.div
-          key={router.route}
-          variants={variants[router.route || "default"]}
-          initial='hidden'
-          animate='enter'
-          exit='exit'
-          transition={{ type: "linear" }}
-          className=''>
-          <Content style={styles.container}>
-            <Component {...pageProps} />
-          </Content>
-        </motion.div>
-      </AnimatePresence>
-      {shouldShowHeader && <Footer>Footer</Footer>}
-    </Layout>
+    <Provider store={store}>
+      <Layout style={styles.layout}>
+        {shouldShowHeader && <Header>Header</Header>}
+        <AnimatePresence mode='wait'>
+          <motion.div
+            key={router.route}
+            variants={variants[router.route || "default"]}
+            initial='hidden'
+            animate='enter'
+            exit='exit'
+            transition={{ type: "linear" }}
+            className=''>
+            <Content style={styles.container}>
+              <Component {...pageProps} />
+            </Content>
+          </motion.div>
+        </AnimatePresence>
+        {shouldShowHeader && <Footer>Footer</Footer>}
+      </Layout>
+    </Provider>
   );
 }
