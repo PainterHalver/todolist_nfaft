@@ -1,8 +1,11 @@
 import { Button, Form, Input, Typography, message } from "antd";
 import { NextPage } from "next";
 import Link from "next/link";
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { useRouter } from "next/router";
+import { selectAuthenticated, login } from "../redux/authSlice";
 
 const { Title } = Typography;
 
@@ -38,11 +41,29 @@ const Register: NextPage = () => {
   const [errors, setErrors] = useState<RegisterErrorType>({});
   const [loading, setLoading] = useState<boolean>(false);
 
+  const dispatch = useAppDispatch();
+  const authenticated = useAppSelector(selectAuthenticated);
+  const router = useRouter();
+
+  // If user is already authenticated, redirect to home page
+  useEffect(() => {
+    if (authenticated) {
+      router.push("/");
+    }
+  }, [authenticated]);
+
   const onFinish = async (data: RegisterData) => {
     message.loading({ content: "Loading...", key: "register" });
     setLoading(true);
     try {
       const res = await axios.post("/auth/register", data);
+
+      // Set state
+      dispatch(login(res.data.user));
+
+      // Set JWT
+      localStorage.setItem("token", res.data.token);
+
       message.success({ content: "Successfully registed!", key: "register" });
       console.log(res);
     } catch (error: unknown | AxiosError) {

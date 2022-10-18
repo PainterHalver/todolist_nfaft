@@ -6,9 +6,11 @@ import "antd/dist/antd.css";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { motion, AnimatePresence, Variants } from "framer-motion";
-import { CSSProperties } from "react";
+import { CSSProperties, useEffect } from "react";
 import { Provider } from "react-redux";
 import store from "../redux/store";
+import { useAppSelector, useAppDispatch } from "../redux/store";
+import { selectAuthenticated, login } from "../redux/authSlice";
 
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -52,32 +54,59 @@ const variants: { [key: string]: Variants } = {
 };
 
 export default function MyApp({ Component, pageProps, router }: AppProps) {
+  return (
+    <Provider store={store}>
+      <AppLayout Component={Component} pageProps={pageProps} router={router} />
+    </Provider>
+  );
+}
+
+function AppLayout({ Component, pageProps, router }: AppProps) {
   const { pathname } = useRouter();
   const layoutExceptionRoutes = ["/login", "/register", "/404"];
   const shouldShowHeader = !layoutExceptionRoutes.includes(pathname);
+  const dispatch = useAppDispatch();
+  const authenticated = useAppSelector(selectAuthenticated);
 
   // TODO: Fetch user data when the app (re)loads
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return;
+    } else {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    }
+
+    (async () => {
+      try {
+        if (!authenticated) {
+          const res = await axios.get("/auth/me");
+          dispatch(login(res.data.user));
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    })();
+  }, []);
 
   return (
-    <Provider store={store}>
-      <Layout style={styles.layout}>
-        {shouldShowHeader && <Header>Header</Header>}
-        <AnimatePresence mode='wait'>
-          <motion.div
-            key={router.route}
-            variants={variants[router.route || "default"]}
-            initial='hidden'
-            animate='enter'
-            exit='exit'
-            transition={{ type: "linear" }}
-            className=''>
-            <Content style={styles.container}>
-              <Component {...pageProps} />
-            </Content>
-          </motion.div>
-        </AnimatePresence>
-        {shouldShowHeader && <Footer>Footer</Footer>}
-      </Layout>
-    </Provider>
+    <Layout style={styles.layout}>
+      {shouldShowHeader && <Header>Header</Header>}
+      <AnimatePresence mode='wait'>
+        <motion.div
+          key={router.route}
+          variants={variants[router.route || "default"]}
+          initial='hidden'
+          animate='enter'
+          exit='exit'
+          transition={{ type: "linear" }}
+          className=''>
+          <Content style={styles.container}>
+            <Component {...pageProps} />
+          </Content>
+        </motion.div>
+      </AnimatePresence>
+      {shouldShowHeader && <Footer>Footer</Footer>}
+    </Layout>
   );
 }

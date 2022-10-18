@@ -1,8 +1,11 @@
 import { Button, Form, Input, Typography, message } from "antd";
 import { NextPage } from "next";
 import Link from "next/link";
-import { CSSProperties, useState } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { selectAuthenticated, login } from "../redux/authSlice";
+import { useRouter } from "next/router";
 
 const { Title } = Typography;
 
@@ -36,11 +39,29 @@ const Login: NextPage = () => {
   const [errors, setErrors] = useState<LoginErrorType>({});
   const [loading, setLoading] = useState<boolean>(false);
 
+  const dispatch = useAppDispatch();
+  const authenticated = useAppSelector(selectAuthenticated);
+  const router = useRouter();
+
+  // If user is already authenticated, redirect to home page
+  useEffect(() => {
+    if (authenticated) {
+      router.push("/");
+    }
+  }, [authenticated]);
+
   const onFinish = async (data: LoginData) => {
     message.loading({ content: "Loading...", key: "login" });
     setLoading(true);
     try {
       const res = await axios.post("/auth/login", data);
+
+      // Set state
+      dispatch(login(res.data.user));
+
+      // Set JWT
+      localStorage.setItem("token", res.data.token);
+
       message.success({ content: "Successfully logged in!", key: "login" });
       console.log(res);
     } catch (error: unknown | AxiosError) {
