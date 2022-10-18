@@ -1,22 +1,12 @@
 import { Button, Form, Input, Typography, message } from "antd";
 import { NextPage } from "next";
 import Link from "next/link";
-import { useState } from "react";
+import { CSSProperties, useState } from "react";
 import axios, { AxiosError } from "axios";
 
 const { Title } = Typography;
 
-const styles = {
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    minHeight: "100vh",
-    height: "100%",
-    padding: "2rem 0",
-
-    background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
-  },
+const styles: { [key: string]: CSSProperties } = {
   form: {
     backgroundColor: "white",
     padding: "2rem",
@@ -69,49 +59,47 @@ const Login: NextPage = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <Form
-        name='login'
-        initialValues={{ remember: true }}
-        size='large'
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete='off'
-        layout='vertical'
-        style={styles.form}>
-        <Title style={{ textAlign: "center" }}>Login</Title>
-        <Form.Item
-          label='Username'
-          name='username'
-          rules={[{ required: true, message: "Please input your username!" }]}
-          help={errors?.username}
-          validateStatus={errors?.username ? "error" : ""}>
-          <Input onChange={() => setErrors({ ...errors, username: undefined })} />
-        </Form.Item>
+    <Form
+      name='login'
+      initialValues={{ remember: true }}
+      size='large'
+      onFinish={onFinish}
+      onFinishFailed={onFinishFailed}
+      autoComplete='off'
+      layout='vertical'
+      style={styles.form}>
+      <Title style={{ textAlign: "center" }}>Login</Title>
+      <Form.Item
+        label='Username'
+        name='username'
+        rules={[{ required: true, message: "Please input your username!" }]}
+        help={errors?.username}
+        validateStatus={errors?.username ? "error" : ""}>
+        <Input onChange={() => setErrors({ ...errors, username: undefined })} />
+      </Form.Item>
 
-        <Form.Item
-          label='Password'
-          name='password'
-          rules={[{ required: true, message: "Please input your password!" }]}
-          help={errors?.password}
-          validateStatus={errors?.password ? "error" : ""}>
-          <Input.Password onChange={() => setErrors({ ...errors, password: undefined })} />
-        </Form.Item>
+      <Form.Item
+        label='Password'
+        name='password'
+        rules={[{ required: true, message: "Please input your password!" }]}
+        help={errors?.password}
+        validateStatus={errors?.password ? "error" : ""}>
+        <Input.Password onChange={() => setErrors({ ...errors, password: undefined })} />
+      </Form.Item>
 
-        {/* <Form.Item name="remember" valuePropName="checked" wrapperCol={{ offset: 8, span: 16 }}>
+      {/* <Form.Item name="remember" valuePropName="checked" wrapperCol={{ offset: 8, span: 16 }}>
           <Checkbox>Remember me</Checkbox>
         </Form.Item> */}
 
-        <Form.Item>
-          <Button type='primary' htmlType='submit' style={styles.submitButton} loading={loading}>
-            Login
-          </Button>
-        </Form.Item>
-        <Form.Item style={{ textAlign: "right" }}>
-          Or <Link href='/register'>register now!</Link>
-        </Form.Item>
-      </Form>
-    </div>
+      <Form.Item>
+        <Button type='primary' htmlType='submit' style={styles.submitButton} loading={loading}>
+          Login
+        </Button>
+      </Form.Item>
+      <Form.Item style={{ textAlign: "right" }}>
+        Or <Link href='/register'>register now!</Link>
+      </Form.Item>
+    </Form>
   );
 };
 
