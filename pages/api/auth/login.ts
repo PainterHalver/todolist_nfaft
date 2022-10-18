@@ -31,7 +31,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!user) {
       return res.status(401).json({
         message: "Unauthorized",
-        errors: { username: "Invalid credentials" },
+        errors: { general: "Invalid username or password" },
       });
     }
 

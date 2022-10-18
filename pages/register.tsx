@@ -88,8 +88,8 @@ const Register: NextPage = () => {
               validateTrigger: "onChange", // onBlur is not working
             },
           ]}
-          help={errors.email}
-          validateStatus={errors.email ? "error" : ""}>
+          help={errors?.email}
+          validateStatus={errors?.email ? "error" : ""}>
           <Input onChange={() => setErrors({ ...errors, email: undefined })} />
         </Form.Item>
 
@@ -97,8 +97,8 @@ const Register: NextPage = () => {
           label='Username'
           name='username'
           rules={[{ required: true, message: "Please input your username!" }]}
-          help={errors.username}
-          validateStatus={errors.username ? "error" : ""}>
+          help={errors?.username}
+          validateStatus={errors?.username ? "error" : ""}>
           <Input onChange={() => setErrors({ ...errors, username: undefined })} />
         </Form.Item>
 
@@ -106,8 +106,8 @@ const Register: NextPage = () => {
           label='Password'
           name='password'
           rules={[{ required: true, message: "Please input your password!" }]}
-          help={errors.password}
-          validateStatus={errors.password ? "error" : ""}>
+          help={errors?.password}
+          validateStatus={errors?.password ? "error" : ""}>
           <Input.Password onChange={() => setErrors({ ...errors, password: undefined })} />
         </Form.Item>
         <Form.Item
@@ -125,8 +125,8 @@ const Register: NextPage = () => {
               },
             }),
           ]}
-          help={errors.password}
-          validateStatus={errors.password ? "error" : ""}>
+          help={errors?.password}
+          validateStatus={errors?.password ? "error" : ""}>
           <Input.Password onChange={() => setErrors({ ...errors, password: undefined })} />
         </Form.Item>
 

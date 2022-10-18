@@ -1,7 +1,8 @@
-import { Button, Form, Input, Typography } from "antd";
+import { Button, Form, Input, Typography, message } from "antd";
 import { NextPage } from "next";
 import Link from "next/link";
 import { useState } from "react";
+import axios, { AxiosError } from "axios";
 
 const { Title } = Typography;
 
@@ -33,22 +34,34 @@ const styles = {
 type LoginErrorType = {
   username?: String;
   password?: String;
+  general?: String;
+};
+
+type LoginData = {
+  username: String;
+  password: String;
 };
 
 const Login: NextPage = () => {
   const [errors, setErrors] = useState<LoginErrorType>({});
   const [loading, setLoading] = useState<boolean>(false);
 
-  const onFinish = async (values: any) => {
-    console.log("Success:", values);
+  const onFinish = async (data: LoginData) => {
+    message.loading({ content: "Loading...", key: "login" });
     setLoading(true);
-    setTimeout(() => {
+    try {
+      const res = await axios.post("/auth/login", data);
+      message.success({ content: "Successfully logged in!", key: "login" });
+      console.log(res);
+    } catch (error: unknown | AxiosError) {
+      console.log(error);
+      if (axios.isAxiosError(error)) {
+        setErrors(error.response?.data.errors);
+      }
+      message.error({ content: errors.general || "Failed to login!", key: "login" });
+    } finally {
       setLoading(false);
-      setErrors({
-        username: "Username is not correct",
-        password: "Password is aaaaa",
-      });
-    }, 2000);
+    }
   };
 
   const onFinishFailed = (errorInfo: any) => {
@@ -71,8 +84,8 @@ const Login: NextPage = () => {
           label='Username'
           name='username'
           rules={[{ required: true, message: "Please input your username!" }]}
-          help={errors.username}
-          validateStatus={errors.username ? "error" : ""}>
+          help={errors?.username}
+          validateStatus={errors?.username ? "error" : ""}>
           <Input onChange={() => setErrors({ ...errors, username: undefined })} />
         </Form.Item>
 
@@ -80,8 +93,8 @@ const Login: NextPage = () => {
           label='Password'
           name='password'
           rules={[{ required: true, message: "Please input your password!" }]}
-          help={errors.password}
-          validateStatus={errors.password ? "error" : ""}>
+          help={errors?.password}
+          validateStatus={errors?.password ? "error" : ""}>
           <Input.Password onChange={() => setErrors({ ...errors, password: undefined })} />
         </Form.Item>
 
