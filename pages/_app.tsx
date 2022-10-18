@@ -5,7 +5,7 @@ const { Header, Content, Footer } = Layout;
 import "antd/dist/antd.css";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { CSSProperties } from "react";
 
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL;
@@ -31,10 +31,22 @@ const styles: { [key: string]: CSSProperties } = {
   },
 };
 
-const variants = {
-  hidden: { opacity: 0, x: -200, y: 0 },
-  enter: { opacity: 1, x: 0, y: 0 },
-  exit: { opacity: 0, x: 200, y: 0 },
+const variants: { [key: string]: Variants } = {
+  default: {
+    hidden: { opacity: 0, x: 0, y: 100 },
+    enter: { opacity: 1, x: 0, y: 0 },
+    exit: { opacity: 0, x: 0, y: -100 },
+  },
+  "/login": {
+    hidden: { opacity: 0, x: -150, y: 0 },
+    enter: { opacity: 1, x: 0, y: 0 },
+    exit: { opacity: 0, x: -150, y: 0 },
+  },
+  "/register": {
+    hidden: { opacity: 0, x: 150, y: 0 },
+    enter: { opacity: 1, x: 0, y: 0 },
+    exit: { opacity: 0, x: 150, y: 0 },
+  },
 };
 
 export default function MyApp({ Component, pageProps, router }: AppProps) {
@@ -48,7 +60,7 @@ export default function MyApp({ Component, pageProps, router }: AppProps) {
       <AnimatePresence mode='wait'>
         <motion.div
           key={router.route}
-          variants={variants}
+          variants={variants[router.route || "default"]}
           initial='hidden'
           animate='enter'
           exit='exit'
