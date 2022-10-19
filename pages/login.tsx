@@ -118,7 +118,10 @@ const Login: NextPage = () => {
         </Button>
       </Form.Item>
       <Form.Item style={{ textAlign: "right" }}>
-        Or <Link href='/register'>register now!</Link>
+        Or{" "}
+        <Link href='/register'>
+          <a>register now!</a>
+        </Link>
       </Form.Item>
     </Form>
   );

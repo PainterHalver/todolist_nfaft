@@ -5,12 +5,13 @@ const { Header, Content, Footer } = Layout;
 import "antd/dist/antd.css";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+import { motion, AnimatePresence, Variants, useIsPresent } from "framer-motion";
 import { CSSProperties, useEffect } from "react";
 import { Provider } from "react-redux";
 import store from "../redux/store";
 import { useAppSelector, useAppDispatch } from "../redux/store";
 import { selectAuthenticated, login } from "../redux/authSlice";
+import Link from "next/link";
 
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -25,11 +26,17 @@ const styles: { [key: string]: CSSProperties } = {
 
     background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
   },
+  header: {
+    color: "white",
+    display: "flex",
+    justifyContent: "end",
+  },
   container: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     minHeight: "100vh",
+    flexGrow: 10,
     height: "100%",
     padding: "2rem 0",
   },
@@ -63,12 +70,11 @@ export default function MyApp({ Component, pageProps, router }: AppProps) {
 
 function AppLayout({ Component, pageProps, router }: AppProps) {
   const { pathname } = useRouter();
-  const layoutExceptionRoutes = ["/login", "/register", "/404"];
+  const layoutExceptionRoutes = ["/login", "/register", "/404", "/logout"];
   const shouldShowHeader = !layoutExceptionRoutes.includes(pathname);
   const dispatch = useAppDispatch();
   const authenticated = useAppSelector(selectAuthenticated);
 
-  // TODO: Fetch user data when the app (re)loads
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -91,7 +97,24 @@ function AppLayout({ Component, pageProps, router }: AppProps) {
 
   return (
     <Layout style={styles.layout}>
-      {shouldShowHeader && <Header>Header</Header>}
+      {shouldShowHeader && (
+        <Header style={styles.header}>
+          {authenticated ? (
+            <Link href='/logout'>
+              <a style={{ color: "white" }}>Logout</a>
+            </Link>
+          ) : (
+            <div>
+              <Link href='/login'>
+                <a style={{ color: "white" }}>Login</a>
+              </Link>
+              <Link href={"/register"} style={{ color: "white" }}>
+                <a style={{ color: "white", marginLeft: ".5rem" }}>Register</a>
+              </Link>
+            </div>
+          )}
+        </Header>
+      )}
       <AnimatePresence mode='wait'>
         <motion.div
           key={router.route}

@@ -150,7 +150,10 @@ const Register: NextPage = () => {
         </Button>
       </Form.Item>
       <Form.Item style={{ textAlign: "right" }}>
-        Or <Link href='/login'>login now!</Link>
+        Or{" "}
+        <Link href='/login'>
+          <a>login now!</a>
+        </Link>
       </Form.Item>
     </Form>
   );
