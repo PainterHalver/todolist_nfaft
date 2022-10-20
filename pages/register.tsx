@@ -1,12 +1,12 @@
 import { Button, Form, Input, Typography, message } from "antd";
-import { NextPage } from "next";
 import Link from "next/link";
-import { CSSProperties, useEffect, useState } from "react";
+import { CSSProperties, FunctionComponent, useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { useRouter } from "next/router";
 import { selectAuthenticated, login } from "../redux/authSlice";
 import { AnimatePresence, motion, Variants } from "framer-motion";
+import { CustomComponentProps } from "./_app";
 
 const { Title } = Typography;
 
@@ -44,7 +44,7 @@ type RegisterData = {
   confirmPassword: String;
 };
 
-const Register: NextPage = () => {
+const Register: FunctionComponent<CustomComponentProps> = ({ setFromNoHeaderRoute }) => {
   const [errors, setErrors] = useState<RegisterErrorType>({});
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -54,6 +54,9 @@ const Register: NextPage = () => {
 
   // If user is already authenticated, redirect to home page
   useEffect(() => {
+    // Set animation header
+    setFromNoHeaderRoute(true);
+
     if (authenticated) {
       router.push("/");
     }

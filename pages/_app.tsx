@@ -6,7 +6,7 @@ import "antd/dist/antd.css";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { motion, AnimatePresence, Variants, useIsPresent, usePresence } from "framer-motion";
-import { CSSProperties, useEffect } from "react";
+import { CSSProperties, useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import store from "../redux/store";
 import { useAppSelector, useAppDispatch } from "../redux/store";
@@ -58,23 +58,29 @@ const pageTransitionVariants: Variants = {
   exit: { transition: { when: "afterChildren" } },
 };
 
-function AppLayout({ Component, pageProps, router }: AppProps) {
+export type CustomComponentProps = {
+  setFromNoHeaderRoute: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+function AppLayout({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();
   const layoutExceptionRoutes = ["/login", "/register", "/404", "/logout"];
   const shouldShowHeader = !layoutExceptionRoutes.includes(pathname);
   const dispatch = useAppDispatch();
   const authenticated = useAppSelector(selectAuthenticated);
+  const [fromNoHeaderRoute, setFromNoHeaderRoute] = useState(false);
 
   const headerVariants: Variants = {
     initial: { y: shouldShowHeader ? -100 : "-100%", display: shouldShowHeader ? "" : "none" },
     animate: {
       y: shouldShowHeader ? 0 : "-100%",
-      transitionEnd: { display: shouldShowHeader ? "" : "none" },
+      // transitionEnd: { display: shouldShowHeader ? "" : "none" },
     },
     exit: {
       y: shouldShowHeader ? -100 : "-100%",
       opacity: 0,
       transitionEnd: { display: shouldShowHeader ? "" : "none" },
+      display: fromNoHeaderRoute ? "none" : "",
     },
   };
 
@@ -102,7 +108,12 @@ function AppLayout({ Component, pageProps, router }: AppProps) {
     <motion.div initial='initial' animate='animate' exit='exit' variants={pageTransitionVariants}>
       <Layout style={styles.layout}>
         {/* {shouldShowHeader && ( */}
-        <motion.div variants={headerVariants} transition={{ type: "linear" }} key='motion-header'>
+        <motion.div
+          variants={headerVariants}
+          transition={{ type: "linear" }}
+          onAnimationEnd={() => {
+            console.log("COMPLETED");
+          }}>
           <Header style={styles.header}>
             {authenticated ? (
               <Link href='/logout'>
@@ -125,7 +136,7 @@ function AppLayout({ Component, pageProps, router }: AppProps) {
         </motion.div>
         {/* )} */}
         <Content style={styles.container}>
-          <Component {...pageProps} />
+          <Component {...pageProps} setFromNoHeaderRoute={setFromNoHeaderRoute} />
         </Content>
         {shouldShowHeader && <Footer>Footer</Footer>}
       </Layout>
