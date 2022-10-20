@@ -11,6 +11,11 @@ const styles: { [key: string]: CSSProperties } = {
     backgroundColor: "white",
     maxWidth: "800px",
     width: "100%",
+
+    minHeight: "80vh",
+    height: "100%",
+    padding: "1rem 1rem",
+
     boxShadow: "0 0 10px 5px rgba(0, 0, 0, 0.2)",
   },
 };
