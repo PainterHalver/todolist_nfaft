@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, Variants } from "framer-motion";
 import { CSSProperties, FunctionComponent } from "react";
 
 const styles: { [key: string]: CSSProperties } = {
@@ -12,7 +12,7 @@ const styles: { [key: string]: CSSProperties } = {
     maxWidth: "800px",
     width: "100%",
 
-    minHeight: "80vh",
+    // minHeight: "80vh",
     height: "100%",
     padding: "1rem 1rem",
 
@@ -20,9 +20,15 @@ const styles: { [key: string]: CSSProperties } = {
   },
 };
 
+const variants: Variants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { delay: 0.3 } },
+  exit: { opacity: 0 },
+};
+
 const Home: FunctionComponent = () => {
   return (
-    <motion.div style={styles.container}>
+    <motion.div variants={variants} transition={{ type: "linear" }} style={styles.container}>
       <div>IndexPage</div>
     </motion.div>
   );

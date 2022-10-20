@@ -19,7 +19,7 @@ message.config({
   duration: 2,
 });
 
-const styles: { [key: string]: CSSProperties } = {
+const styles: { [key: string]: CSSProperties | { [key: string]: CSSProperties } } = {
   layout: {
     minHeight: "100vh",
     overflowX: "hidden",
@@ -46,8 +46,6 @@ const styles: { [key: string]: CSSProperties } = {
     minHeight: "400px",
     // height: "1px",
     padding: "1rem 1rem",
-
-    backgroundColor: "orangered",
   },
   footer: {
     backgroundColor: "transparent",
@@ -90,6 +88,16 @@ function AppLayout({ Component, pageProps }: AppProps) {
     animate: { y: shouldShowHeader ? 0 : "-100%" },
     exit: {
       y: shouldShowHeader ? -100 : "-100%",
+      display: fromNoHeaderRoute ? "none" : "",
+      transitionEnd: { display: shouldShowHeader ? "" : "none" },
+    },
+  };
+
+  const footerVariants: Variants = {
+    initial: { y: shouldShowHeader ? 100 : "100%", display: shouldShowHeader ? "" : "none" },
+    animate: { y: shouldShowHeader ? 0 : "100%" },
+    exit: {
+      y: shouldShowHeader ? 100 : "100%",
       display: fromNoHeaderRoute ? "none" : "",
       transitionEnd: { display: shouldShowHeader ? "" : "none" },
     },
@@ -152,7 +160,9 @@ function AppLayout({ Component, pageProps }: AppProps) {
         <Content style={styles.contentContainer}>
           <Component {...pageProps} setFromNoHeaderRoute={setFromNoHeaderRoute} />
         </Content>
-        {shouldShowHeader && <Footer style={styles.footer}>© 2022 PainterHalver. All Rights Reserved.</Footer>}
+        <motion.div variants={footerVariants} transition={{ type: "tween" }}>
+          <Footer style={styles.footer}>© 2022 PainterHalver. All Rights Reserved.</Footer>
+        </motion.div>
       </Layout>
     </motion.div>
   );
