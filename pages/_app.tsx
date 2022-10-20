@@ -52,6 +52,12 @@ export default function MyApp({ Component, pageProps, router }: AppProps) {
   );
 }
 
+const pageTransitionVariants: Variants = {
+  initial: { opacity: 0 },
+  animate: { opacity: 1, transition: { when: "beforeChildren" } },
+  exit: { opacity: 0 },
+};
+
 function AppLayout({ Component, pageProps, router }: AppProps) {
   const { pathname } = useRouter();
   const layoutExceptionRoutes = ["/login", "/register", "/404", "/logout"];
@@ -80,34 +86,34 @@ function AppLayout({ Component, pageProps, router }: AppProps) {
   }, []);
 
   return (
-    // <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-    <Layout style={styles.layout}>
-      {shouldShowHeader && (
-        <Header style={styles.header}>
-          {authenticated ? (
-            <Link href='/logout'>
-              <a style={{ color: "white" }}>Logout</a>
+    <motion.div initial='initial' animate='animate' exit='exit' variants={pageTransitionVariants}>
+      <Layout style={styles.layout}>
+        {shouldShowHeader && (
+          <Header style={styles.header}>
+            {authenticated ? (
+              <Link href='/logout'>
+                <a style={{ color: "white" }}>Logout</a>
+              </Link>
+            ) : (
+              <div>
+                <Link href='/login'>
+                  <a style={{ color: "white" }}>Login</a>
+                </Link>
+                <Link href={"/register"} style={{ color: "white" }}>
+                  <a style={{ color: "white", marginLeft: ".5rem" }}>Register</a>
+                </Link>
+              </div>
+            )}
+            <Link href={"/ssred"} style={{ color: "white" }}>
+              <a style={{ color: "white", marginLeft: ".5rem" }}>Ssred</a>
             </Link>
-          ) : (
-            <div>
-              <Link href='/login'>
-                <a style={{ color: "white" }}>Login</a>
-              </Link>
-              <Link href={"/register"} style={{ color: "white" }}>
-                <a style={{ color: "white", marginLeft: ".5rem" }}>Register</a>
-              </Link>
-            </div>
-          )}
-          <Link href={"/ssred"} style={{ color: "white" }}>
-            <a style={{ color: "white", marginLeft: ".5rem" }}>Ssred</a>
-          </Link>
-        </Header>
-      )}
-      <Content style={styles.container}>
-        <Component {...pageProps} />
-      </Content>
-      {shouldShowHeader && <Footer>Footer</Footer>}
-    </Layout>
-    // </motion.div>
+          </Header>
+        )}
+        <Content style={styles.container}>
+          <Component {...pageProps} />
+        </Content>
+        {shouldShowHeader && <Footer>Footer</Footer>}
+      </Layout>
+    </motion.div>
   );
 }

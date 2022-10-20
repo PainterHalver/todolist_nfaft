@@ -26,8 +26,8 @@ const styles: { [key: string]: CSSProperties } = {
 };
 
 const variants: Variants = {
-  hidden: { opacity: 0, x: -150, y: 0 },
-  enter: { opacity: 1, x: 0, y: 0 },
+  initial: { opacity: 0, x: -150, y: 0 },
+  animate: { opacity: 1, x: 0, y: 0 },
   exit: { opacity: 0, x: -150, y: 0 },
 };
 
@@ -87,13 +87,7 @@ const Login: NextPage = () => {
   };
 
   return (
-    <motion.div
-      variants={variants}
-      initial='hidden'
-      animate='enter'
-      exit='exit'
-      transition={{ type: "linear" }}
-      style={styles.formContainer}>
+    <motion.div variants={variants} transition={{ type: "linear" }} style={styles.formContainer}>
       <Form
         name='login'
         initialValues={{ remember: true }}
