@@ -1,21 +1,25 @@
-import type { NextPage } from "next";
-import { DatePicker, message, Alert } from "antd";
-import { useState } from "react";
-import { AnimatePresence, motion, useIsPresent } from "framer-motion";
+import { motion } from "framer-motion";
+import { CSSProperties, FunctionComponent } from "react";
 
-const Home: NextPage = () => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [date, setDate] = useState<any>(null);
-  const handleChange = (value: any) => {
-    message.info(`Selected Date: ${value ? value.format("YYYY-MM-DD") : "None"}`);
-    setDate(value);
-  };
-  const isPresent = useIsPresent();
+const styles: { [key: string]: CSSProperties } = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
 
+    backgroundColor: "white",
+    maxWidth: "800px",
+    width: "100%",
+    boxShadow: "0 0 10px 5px rgba(0, 0, 0, 0.2)",
+  },
+};
+
+const Home: FunctionComponent = () => {
   return (
-    <div style={{ width: 400, margin: "100px auto" }}>
+    <motion.div style={styles.container}>
       <div>IndexPage</div>
-    </div>
+    </motion.div>
   );
 };
 

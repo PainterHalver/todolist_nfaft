@@ -1,11 +1,11 @@
 import type { AppProps } from "next/app";
 import "../styles/globals.css";
-import { Layout, message } from "antd";
+import { Button, Layout, message } from "antd";
 const { Header, Content, Footer } = Layout;
 import "antd/dist/antd.css";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { motion, AnimatePresence, Variants, useIsPresent, usePresence } from "framer-motion";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import { CSSProperties, useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import store from "../redux/store";
@@ -27,18 +27,33 @@ const styles: { [key: string]: CSSProperties } = {
     background: "linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)",
   },
   header: {
-    color: "white",
+    display: "flex",
+    justifyContent: "center",
+    backgroundColor: "#f5ede555",
+    padding: "0 1rem",
+  },
+  headerContent: {
     display: "flex",
     justifyContent: "end",
+    maxWidth: "800px",
+    width: "100%",
+    backgroundColor: "cyan",
+    padding: "0 1rem",
   },
-  container: {
+  contentContainer: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    minHeight: "100vh",
+    // minHeight: "100vh",
     flexGrow: 10,
     height: "100%",
-    padding: "2rem 0",
+    padding: "1.5rem 1rem",
+  },
+  footer: {
+    backgroundColor: "transparent",
+    color: "white",
+    textAlign: "center",
+    opacity: 0.7,
   },
 };
 
@@ -72,15 +87,11 @@ function AppLayout({ Component, pageProps }: AppProps) {
 
   const headerVariants: Variants = {
     initial: { y: shouldShowHeader ? -100 : "-100%", display: shouldShowHeader ? "" : "none" },
-    animate: {
-      y: shouldShowHeader ? 0 : "-100%",
-      // transitionEnd: { display: shouldShowHeader ? "" : "none" },
-    },
+    animate: { y: shouldShowHeader ? 0 : "-100%" },
     exit: {
       y: shouldShowHeader ? -100 : "-100%",
-      opacity: 0,
-      transitionEnd: { display: shouldShowHeader ? "" : "none" },
       display: fromNoHeaderRoute ? "none" : "",
+      transitionEnd: { display: shouldShowHeader ? "" : "none" },
     },
   };
 
@@ -108,37 +119,40 @@ function AppLayout({ Component, pageProps }: AppProps) {
     <motion.div initial='initial' animate='animate' exit='exit' variants={pageTransitionVariants}>
       <Layout style={styles.layout}>
         {/* {shouldShowHeader && ( */}
-        <motion.div
-          variants={headerVariants}
-          transition={{ type: "linear" }}
-          onAnimationEnd={() => {
-            console.log("COMPLETED");
-          }}>
+        <motion.div variants={headerVariants} transition={{ type: "tween" }}>
           <Header style={styles.header}>
-            {authenticated ? (
-              <Link href='/logout'>
-                <a style={{ color: "white" }}>Logout</a>
-              </Link>
-            ) : (
-              <div>
-                <Link href='/login'>
-                  <a style={{ color: "white" }}>Login</a>
-                </Link>
-                <Link href={"/register"} style={{ color: "white" }}>
-                  <a style={{ color: "white", marginLeft: ".5rem" }}>Register</a>
+            <div style={styles.headerContent}>
+              <div style={{ marginRight: "auto" }}>
+                <Link href={"/ssred"}>
+                  <Button>Ssred</Button>
                 </Link>
               </div>
-            )}
-            <Link href={"/ssred"} style={{ color: "white" }}>
-              <a style={{ color: "white", marginLeft: ".5rem" }}>Ssred</a>
-            </Link>
+              {authenticated ? (
+                <div>
+                  <Link href='/logout'>
+                    <Button danger>Logout</Button>
+                  </Link>
+                </div>
+              ) : (
+                <div>
+                  <Link href='/login'>
+                    <Button type='primary'>Login</Button>
+                  </Link>
+                  <Link href={"/register"}>
+                    <Button type='default' style={{ marginLeft: "1rem" }}>
+                      Register
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
           </Header>
         </motion.div>
         {/* )} */}
-        <Content style={styles.container}>
+        <Content style={styles.contentContainer}>
           <Component {...pageProps} setFromNoHeaderRoute={setFromNoHeaderRoute} />
         </Content>
-        {shouldShowHeader && <Footer>Footer</Footer>}
+        {shouldShowHeader && <Footer style={styles.footer}>© 2022 PainterHalver. All Rights Reserved.</Footer>}
       </Layout>
     </motion.div>
   );
