@@ -5,7 +5,7 @@ const { Header, Content, Footer } = Layout;
 import "antd/dist/antd.css";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { motion, AnimatePresence, Variants, useIsPresent } from "framer-motion";
+import { motion, AnimatePresence, Variants, useIsPresent, usePresence } from "framer-motion";
 import { CSSProperties, useEffect } from "react";
 import { Provider } from "react-redux";
 import store from "../redux/store";
@@ -53,9 +53,9 @@ export default function MyApp({ Component, pageProps, router }: AppProps) {
 }
 
 const pageTransitionVariants: Variants = {
-  initial: { opacity: 0 },
-  animate: { opacity: 1, transition: { when: "beforeChildren" } },
-  exit: { opacity: 0 },
+  initial: {},
+  animate: {},
+  exit: { transition: { when: "afterChildren" } },
 };
 
 function AppLayout({ Component, pageProps, router }: AppProps) {
@@ -64,6 +64,19 @@ function AppLayout({ Component, pageProps, router }: AppProps) {
   const shouldShowHeader = !layoutExceptionRoutes.includes(pathname);
   const dispatch = useAppDispatch();
   const authenticated = useAppSelector(selectAuthenticated);
+
+  const headerVariants: Variants = {
+    initial: { y: shouldShowHeader ? -100 : "-100%", display: shouldShowHeader ? "" : "none" },
+    animate: {
+      y: shouldShowHeader ? 0 : "-100%",
+      transitionEnd: { display: shouldShowHeader ? "" : "none" },
+    },
+    exit: {
+      y: shouldShowHeader ? -100 : "-100%",
+      opacity: 0,
+      transitionEnd: { display: shouldShowHeader ? "" : "none" },
+    },
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -88,7 +101,8 @@ function AppLayout({ Component, pageProps, router }: AppProps) {
   return (
     <motion.div initial='initial' animate='animate' exit='exit' variants={pageTransitionVariants}>
       <Layout style={styles.layout}>
-        {shouldShowHeader && (
+        {/* {shouldShowHeader && ( */}
+        <motion.div variants={headerVariants} transition={{ type: "linear" }} key='motion-header'>
           <Header style={styles.header}>
             {authenticated ? (
               <Link href='/logout'>
@@ -108,7 +122,8 @@ function AppLayout({ Component, pageProps, router }: AppProps) {
               <a style={{ color: "white", marginLeft: ".5rem" }}>Ssred</a>
             </Link>
           </Header>
-        )}
+        </motion.div>
+        {/* )} */}
         <Content style={styles.container}>
           <Component {...pageProps} />
         </Content>
