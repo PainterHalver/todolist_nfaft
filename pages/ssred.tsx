@@ -1,5 +1,6 @@
-import { GetServerSideProps, GetStaticProps } from "next";
+import { GetServerSideProps } from "next";
 import { Typography } from "antd";
+import Link from "next/link";
 
 const { Text } = Typography;
 
@@ -18,6 +19,7 @@ export default function ssred({ name, color, data }: SSRProps) {
       <Text mark>{name}</Text>
       <Text keyboard>{color}</Text>
       <Text mark>{data.toString()}</Text>
+      <Link href={"/"}>Index</Link>
     </div>
   );
 }

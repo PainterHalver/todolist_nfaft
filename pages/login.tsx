@@ -1,16 +1,17 @@
 import { Button, Form, Input, Typography, message } from "antd";
 import { NextPage } from "next";
 import Link from "next/link";
-import { CSSProperties, useEffect, useState } from "react";
+import { CSSProperties, Fragment, useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { selectAuthenticated, login } from "../redux/authSlice";
 import { useRouter } from "next/router";
+import { AnimatePresence, motion, Variants } from "framer-motion";
 
 const { Title } = Typography;
 
 const styles: { [key: string]: CSSProperties } = {
-  form: {
+  formContainer: {
     backgroundColor: "white",
     padding: "2rem",
     boxShadow: "0 0 10px 5px rgba(0, 0, 0, 0.2)",
@@ -22,6 +23,12 @@ const styles: { [key: string]: CSSProperties } = {
     width: "100%",
     marginTop: "1rem",
   },
+};
+
+const variants: Variants = {
+  hidden: { opacity: 0, x: -150, y: 0 },
+  enter: { opacity: 1, x: 0, y: 0 },
+  exit: { opacity: 0, x: -150, y: 0 },
 };
 
 type LoginErrorType = {
@@ -80,50 +87,57 @@ const Login: NextPage = () => {
   };
 
   return (
-    <Form
-      name='login'
-      initialValues={{ remember: true }}
-      size='large'
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      autoComplete='off'
-      layout='vertical'
-      style={styles.form}>
-      <Title style={{ textAlign: "center" }}>Login</Title>
-      <Form.Item
-        label='Username'
-        name='username'
-        rules={[{ required: true, message: "Please input your username!" }]}
-        help={errors?.username}
-        validateStatus={errors?.username ? "error" : ""}>
-        <Input onChange={() => setErrors({ ...errors, username: undefined })} />
-      </Form.Item>
+    <motion.div
+      variants={variants}
+      initial='hidden'
+      animate='enter'
+      exit='exit'
+      transition={{ type: "linear" }}
+      style={styles.formContainer}>
+      <Form
+        name='login'
+        initialValues={{ remember: true }}
+        size='large'
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+        autoComplete='off'
+        layout='vertical'>
+        <Title style={{ textAlign: "center" }}>Login</Title>
+        <Form.Item
+          label='Username'
+          name='username'
+          rules={[{ required: true, message: "Please input your username!" }]}
+          help={errors?.username}
+          validateStatus={errors?.username ? "error" : ""}>
+          <Input onChange={() => setErrors({ ...errors, username: undefined })} />
+        </Form.Item>
 
-      <Form.Item
-        label='Password'
-        name='password'
-        rules={[{ required: true, message: "Please input your password!" }]}
-        help={errors?.password}
-        validateStatus={errors?.password ? "error" : ""}>
-        <Input.Password onChange={() => setErrors({ ...errors, password: undefined })} />
-      </Form.Item>
+        <Form.Item
+          label='Password'
+          name='password'
+          rules={[{ required: true, message: "Please input your password!" }]}
+          help={errors?.password}
+          validateStatus={errors?.password ? "error" : ""}>
+          <Input.Password onChange={() => setErrors({ ...errors, password: undefined })} />
+        </Form.Item>
 
-      {/* <Form.Item name="remember" valuePropName="checked" wrapperCol={{ offset: 8, span: 16 }}>
+        {/* <Form.Item name="remember" valuePropName="checked" wrapperCol={{ offset: 8, span: 16 }}>
           <Checkbox>Remember me</Checkbox>
         </Form.Item> */}
 
-      <Form.Item>
-        <Button type='primary' htmlType='submit' style={styles.submitButton} loading={loading}>
-          Login
-        </Button>
-      </Form.Item>
-      <Form.Item style={{ textAlign: "right" }}>
-        Or{" "}
-        <Link href='/register'>
-          <a>register now!</a>
-        </Link>
-      </Form.Item>
-    </Form>
+        <Form.Item>
+          <Button type='primary' htmlType='submit' style={styles.submitButton} loading={loading}>
+            Login
+          </Button>
+        </Form.Item>
+        <Form.Item style={{ textAlign: "right" }}>
+          Or{" "}
+          <Link href='/register'>
+            <a>register now!</a>
+          </Link>
+        </Form.Item>
+      </Form>
+    </motion.div>
   );
 };
 

@@ -6,11 +6,12 @@ import axios, { AxiosError } from "axios";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { useRouter } from "next/router";
 import { selectAuthenticated, login } from "../redux/authSlice";
+import { AnimatePresence, motion, Variants } from "framer-motion";
 
 const { Title } = Typography;
 
 const styles: { [key: string]: CSSProperties } = {
-  form: {
+  formContainer: {
     backgroundColor: "white",
     padding: "2rem",
     boxShadow: "0 0 10px 5px rgba(0, 0, 0, 0.2)",
@@ -22,6 +23,12 @@ const styles: { [key: string]: CSSProperties } = {
     width: "100%",
     marginTop: "1rem",
   },
+};
+
+const variants: Variants = {
+  hidden: { opacity: 0, x: 150, y: 0 },
+  enter: { opacity: 1, x: 0, y: 0 },
+  exit: { opacity: 0, x: 150, y: 0 },
 };
 
 type RegisterErrorType = {
@@ -78,84 +85,91 @@ const Register: NextPage = () => {
   };
 
   return (
-    <Form
-      name='register'
-      initialValues={{ remember: true }}
-      size='large'
-      onFinish={onFinish}
-      autoComplete='off'
-      layout='vertical'
-      style={styles.form}>
-      <Title style={{ textAlign: "center" }}>Register</Title>
-      <Form.Item
-        label='Email'
-        name='email'
-        rules={[
-          { required: true, message: "Please input your email!" },
-          {
-            type: "email",
-            message: "Please input a valid email!",
-            validateTrigger: "onChange", // onBlur is not working
-          },
-        ]}
-        help={errors?.email}
-        validateStatus={errors?.email ? "error" : ""}>
-        <Input onChange={() => setErrors({ ...errors, email: undefined })} />
-      </Form.Item>
-
-      <Form.Item
-        label='Username'
-        name='username'
-        rules={[{ required: true, message: "Please input your username!" }]}
-        help={errors?.username}
-        validateStatus={errors?.username ? "error" : ""}>
-        <Input onChange={() => setErrors({ ...errors, username: undefined })} />
-      </Form.Item>
-
-      <Form.Item
-        label='Password'
-        name='password'
-        rules={[{ required: true, message: "Please input your password!" }]}
-        help={errors?.password}
-        validateStatus={errors?.password ? "error" : ""}>
-        <Input.Password onChange={() => setErrors({ ...errors, password: undefined })} />
-      </Form.Item>
-      <Form.Item
-        label='Confirm Password'
-        name='confirmPassword'
-        dependencies={["password"]}
-        rules={[
-          { required: true, message: "Please reenter your password!" },
-          (form) => ({
-            validator(_, value) {
-              if (!value || form.getFieldValue("password") === value) {
-                return Promise.resolve();
-              }
-              return Promise.reject("Passwords do not match!");
+    <motion.div
+      variants={variants}
+      initial='hidden'
+      animate='enter'
+      exit='exit'
+      transition={{ type: "linear" }}
+      style={styles.formContainer}>
+      <Form
+        name='register'
+        initialValues={{ remember: true }}
+        size='large'
+        onFinish={onFinish}
+        autoComplete='off'
+        layout='vertical'>
+        <Title style={{ textAlign: "center" }}>Register</Title>
+        <Form.Item
+          label='Email'
+          name='email'
+          rules={[
+            { required: true, message: "Please input your email!" },
+            {
+              type: "email",
+              message: "Please input a valid email!",
+              validateTrigger: "onChange", // onBlur is not working
             },
-          }),
-        ]}
-        help={errors?.password}
-        validateStatus={errors?.password ? "error" : ""}>
-        <Input.Password onChange={() => setErrors({ ...errors, password: undefined })} />
-      </Form.Item>
+          ]}
+          help={errors?.email}
+          validateStatus={errors?.email ? "error" : ""}>
+          <Input onChange={() => setErrors({ ...errors, email: undefined })} />
+        </Form.Item>
 
-      {/* <Form.Item name="remember" valuePropName="checked" wrapperCol={{ offset: 8, span: 16 }}>
+        <Form.Item
+          label='Username'
+          name='username'
+          rules={[{ required: true, message: "Please input your username!" }]}
+          help={errors?.username}
+          validateStatus={errors?.username ? "error" : ""}>
+          <Input onChange={() => setErrors({ ...errors, username: undefined })} />
+        </Form.Item>
+
+        <Form.Item
+          label='Password'
+          name='password'
+          rules={[{ required: true, message: "Please input your password!" }]}
+          help={errors?.password}
+          validateStatus={errors?.password ? "error" : ""}>
+          <Input.Password onChange={() => setErrors({ ...errors, password: undefined })} />
+        </Form.Item>
+        <Form.Item
+          label='Confirm Password'
+          name='confirmPassword'
+          dependencies={["password"]}
+          rules={[
+            { required: true, message: "Please reenter your password!" },
+            (form) => ({
+              validator(_, value) {
+                if (!value || form.getFieldValue("password") === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject("Passwords do not match!");
+              },
+            }),
+          ]}
+          help={errors?.password}
+          validateStatus={errors?.password ? "error" : ""}>
+          <Input.Password onChange={() => setErrors({ ...errors, password: undefined })} />
+        </Form.Item>
+
+        {/* <Form.Item name="remember" valuePropName="checked" wrapperCol={{ offset: 8, span: 16 }}>
           <Checkbox>Remember me</Checkbox>
         </Form.Item> */}
 
-      <Form.Item>
-        <Button type='primary' htmlType='submit' style={styles.submitButton} loading={loading}>
-          Register
-        </Button>
-      </Form.Item>
-      <Form.Item style={{ textAlign: "right" }}>
-        Or{" "}
-        <Link href='/login'>
-          <a>login now!</a>
-        </Link>
-      </Form.Item>
-    </Form>
+        <Form.Item>
+          <Button type='primary' htmlType='submit' style={styles.submitButton} loading={loading}>
+            Register
+          </Button>
+        </Form.Item>
+        <Form.Item style={{ textAlign: "right" }}>
+          Or{" "}
+          <Link href='/login'>
+            <a>login now!</a>
+          </Link>
+        </Form.Item>
+      </Form>
+    </motion.div>
   );
 };
 

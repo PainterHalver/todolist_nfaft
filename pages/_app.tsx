@@ -42,28 +42,12 @@ const styles: { [key: string]: CSSProperties } = {
   },
 };
 
-const variants: { [key: string]: Variants } = {
-  default: {
-    hidden: { opacity: 0, x: 0, y: 100 },
-    enter: { opacity: 1, x: 0, y: 0 },
-    exit: { opacity: 0, x: 0, y: -100 },
-  },
-  "/login": {
-    hidden: { opacity: 0, x: -150, y: 0 },
-    enter: { opacity: 1, x: 0, y: 0 },
-    exit: { opacity: 0, x: -150, y: 0 },
-  },
-  "/register": {
-    hidden: { opacity: 0, x: 150, y: 0 },
-    enter: { opacity: 1, x: 0, y: 0 },
-    exit: { opacity: 0, x: 150, y: 0 },
-  },
-};
-
 export default function MyApp({ Component, pageProps, router }: AppProps) {
   return (
     <Provider store={store}>
-      <AppLayout Component={Component} pageProps={pageProps} router={router} />
+      <AnimatePresence mode='wait'>
+        <AppLayout Component={Component} pageProps={pageProps} router={router} key={router.route} />
+      </AnimatePresence>
     </Provider>
   );
 }
@@ -96,6 +80,7 @@ function AppLayout({ Component, pageProps, router }: AppProps) {
   }, []);
 
   return (
+    // <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
     <Layout style={styles.layout}>
       {shouldShowHeader && (
         <Header style={styles.header}>
@@ -113,23 +98,16 @@ function AppLayout({ Component, pageProps, router }: AppProps) {
               </Link>
             </div>
           )}
+          <Link href={"/ssred"} style={{ color: "white" }}>
+            <a style={{ color: "white", marginLeft: ".5rem" }}>Ssred</a>
+          </Link>
         </Header>
       )}
-      <AnimatePresence mode='wait'>
-        <motion.div
-          key={router.route}
-          variants={variants[router.route || "default"]}
-          initial='hidden'
-          animate='enter'
-          exit='exit'
-          transition={{ type: "linear" }}
-          className=''>
-          <Content style={styles.container}>
-            <Component {...pageProps} />
-          </Content>
-        </motion.div>
-      </AnimatePresence>
+      <Content style={styles.container}>
+        <Component {...pageProps} />
+      </Content>
       {shouldShowHeader && <Footer>Footer</Footer>}
     </Layout>
+    // </motion.div>
   );
 }
