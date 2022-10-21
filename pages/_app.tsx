@@ -84,22 +84,22 @@ function AppLayout({ Component, pageProps }: AppProps) {
   const [fromNoHeaderRoute, setFromNoHeaderRoute] = useState(false);
 
   const headerVariants: Variants = {
-    initial: { y: shouldShowHeader ? -100 : "-100%", display: shouldShowHeader ? "" : "none" },
+    initial: { y: shouldShowHeader ? -100 : "-100%", display: shouldShowHeader ? "block" : "none" },
     animate: { y: shouldShowHeader ? 0 : "-100%" },
     exit: {
       y: shouldShowHeader ? -100 : "-100%",
-      display: fromNoHeaderRoute ? "none" : "",
-      transitionEnd: { display: shouldShowHeader ? "" : "none" },
+      display: fromNoHeaderRoute ? "none" : "block",
+      transitionEnd: { display: shouldShowHeader ? "block" : "none" },
     },
   };
 
   const footerVariants: Variants = {
-    initial: { y: shouldShowHeader ? 100 : "100%", display: shouldShowHeader ? "" : "none" },
+    initial: { y: shouldShowHeader ? 100 : "100%", display: shouldShowHeader ? "block" : "none" },
     animate: { y: shouldShowHeader ? 0 : "100%" },
     exit: {
       y: shouldShowHeader ? 100 : "100%",
-      display: fromNoHeaderRoute ? "none" : "",
-      transitionEnd: { display: shouldShowHeader ? "" : "none" },
+      display: fromNoHeaderRoute ? "none" : "block",
+      transitionEnd: { display: shouldShowHeader ? "block" : "none" },
     },
   };
 
