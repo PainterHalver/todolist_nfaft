@@ -85,6 +85,9 @@ const Home: FunctionComponent = () => {
     const title = addTodoTitle.current?.value;
     const note = addTodoNote.current?.value;
 
+    // Clear the form
+    cancelForm();
+
     try {
       const docRef: DocumentReference = await addDoc(collection(db, "todos"), {
         title: title,
