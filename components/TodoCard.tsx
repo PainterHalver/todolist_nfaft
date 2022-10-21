@@ -10,19 +10,20 @@ type Props = {
   todo: Todo;
 };
 
-const styles: { [key: string]: CSSProperties } = {
+const styles: { [key: string]: CSSProperties | { [key: string]: CSSProperties } } = {
   cardContainer: {
-    width: "100%",
+    // width: "100%",
     borderRadius: "5px",
-    backgroundColor: "#ffffffaa",
   },
-  card: {},
+  card: {
+    backgroundColor: "#ffffff",
+  },
 };
 
 const variants: Variants = {
   initial: { scale: 0 },
-  animate: { scale: 1, transition: { delay: 0.3, type: "spring", stiffness: 100 } },
-  exit: { opacity: 0, transition: { delay: 0.3 } },
+  animate: { scale: 1, transition: { type: "spring", stiffness: 100 } },
+  exit: { opacity: 0 },
 };
 
 const TodoCard: FunctionComponent<Props> = ({ id, todo: { title, note, completed, createdAt, updatedAt } }) => {
@@ -45,11 +46,18 @@ const TodoCard: FunctionComponent<Props> = ({ id, todo: { title, note, completed
   };
 
   return (
-    <motion.div variants={variants} layout style={styles.cardContainer}>
+    <motion.div
+      initial='initial'
+      animate='animate'
+      exit='exit'
+      variants={variants}
+      layout
+      style={styles.cardContainer}
+      whileHover={{ scale: 1.05 }}>
       <Card
         title={<Title completed={completed} title={title} toggleCompleted={toggleCompleted} />}
         bordered={false}
-        style={styles.card}>
+        style={{ ...styles.card, opacity: completed ? 0.6 : 1 }}>
         <Typography>{note}</Typography>
         <Typography style={{ opacity: 0.6, textAlign: "right", marginTop: "1rem" }}>
           {updatedAt.toDate().toISOString()}
