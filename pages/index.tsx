@@ -49,7 +49,7 @@ const styles: { [key: string]: CSSProperties } = {
     height: "100%",
     display: "grid",
     gridTemplateColumns: "repeat(3, 1fr)",
-    gap: "1.5rem",
+    gap: "2rem",
     // backgroundColor: "red",
   },
 };
