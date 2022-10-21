@@ -22,8 +22,8 @@ const styles: { [key: string]: CSSProperties | { [key: string]: CSSProperties } 
 
 const variants: Variants = {
   initial: { scale: 0 },
-  animate: { scale: 1, transition: { type: "spring", stiffness: 100 } },
-  exit: { opacity: 0 },
+  animate: { scale: 1 },
+  exit: { opacity: 0, scale: 0 },
 };
 
 const TodoCard: FunctionComponent<Props> = ({ id, todo: { title, note, completed, createdAt, updatedAt } }) => {
