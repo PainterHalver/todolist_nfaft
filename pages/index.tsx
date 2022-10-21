@@ -11,8 +11,12 @@ import {
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import { CSSProperties, FormEvent, FunctionComponent, useEffect, useRef, useState } from "react";
 import TodoCard from "../components/TodoCard";
+import TodoCardModal from "../components/TodoCardModal";
 import db from "../lib/firebase";
 import { Button } from "antd";
+import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import { unregisterCurrentTodo } from "../redux/todoSlice";
 
 const styles: { [key: string]: CSSProperties } = {
   container: {
@@ -65,9 +69,14 @@ const Home: FunctionComponent = () => {
   const addTodoTitle = useRef<HTMLTextAreaElement>(null);
   const addTodoNote = useRef<HTMLTextAreaElement>(null);
   const [todos, setTodos] = useState<DocumentData[]>([]);
+  const dispatch = useDispatch();
+
+  const router = useRouter();
+  const hash = router.asPath.split("#")[1];
 
   useEffect(() => {
     resizeTextarea(addTodoTitle.current!);
+    dispatch(unregisterCurrentTodo());
 
     const unsubscribe = onSnapshot(
       query(collection(db, "todos"), orderBy("completed", "asc"), orderBy("updatedAt", "desc")),
@@ -163,6 +172,7 @@ const Home: FunctionComponent = () => {
           ))}
         </AnimatePresence>
       </div>
+      <AnimatePresence>{hash && <TodoCardModal />}</AnimatePresence>
     </motion.div>
   );
 };

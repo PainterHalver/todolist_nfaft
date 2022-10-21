@@ -2,9 +2,10 @@ import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 
 import authReducer from "./authSlice";
+import todoReducer from "./todoSlice";
 
 const store = configureStore({
-  reducer: { auth: authReducer },
+  reducer: { auth: authReducer, todo: todoReducer },
   devTools: process.env.NODE_ENV !== "production",
 });
 

@@ -4,6 +4,6 @@ export type Todo = {
   title: string;
   note: string;
   completed: boolean;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  createdAt?: Timestamp;
+  updatedAt?: Timestamp;
 };

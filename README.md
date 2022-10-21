@@ -7,3 +7,4 @@
 5. Orchestrate component's transition (children) with page transition (parent): Have to remove the `initial`,`animate` and `exit` props from the children elements and just set them in their variant. ([stackoverflow](https://stackoverflow.com/questions/58980261/transition-when-doesnt-work-in-framer-motion))
 6. If `motion` is not working, try adding `layout` or `key` prop.
 7. `whiteSpace: "break-spaces"` to break line.
+8. Prevent Event Trigger on Parent From Child using `stopPropagation` ([stackoverflow](https://stackoverflow.com/questions/37568550/react-prevent-event-trigger-on-parent-from-child)).

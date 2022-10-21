@@ -1,23 +1,40 @@
 import { DeleteOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { Card, Popconfirm, Switch, Typography } from "antd";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { motion, Variants } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRouter } from "next/router";
-import React, { CSSProperties, FunctionComponent, useState } from "react";
+import React, { CSSProperties, FunctionComponent } from "react";
 import db from "../lib/firebase";
-import { Todo } from "../lib/types";
-import { useAppDispatch } from "../redux/store";
-import { registerCurrentTodo } from "../redux/todoSlice";
-
-type Props = {
-  id: string;
-  todo: Todo;
-};
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { selectCurrentTodo, selectCurrentTodoId, registerCurrentTodo } from "../redux/todoSlice";
 
 const styles: { [key: string]: CSSProperties | { [key: string]: CSSProperties } } = {
+  modalContainer: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    padding: "1rem",
+  },
+  overlay: {
+    zIndex: 1,
+    position: "fixed",
+    background: "rgba(0, 0, 0, 0.2)",
+    willChange: "opacity",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
   cardContainer: {
-    // width: "100%",
+    width: "100%",
     borderRadius: "5px",
+    maxWidth: "700px",
+    zIndex: 2,
   },
   card: {
     backgroundColor: "#ffffff",
@@ -26,13 +43,15 @@ const styles: { [key: string]: CSSProperties | { [key: string]: CSSProperties } 
   },
 };
 
-const TodoCard: FunctionComponent<Props> = ({ id, todo: { title, note, completed, createdAt, updatedAt } }) => {
-  const [isHovered, setIsHovered] = useState(false);
+const TodoCard: FunctionComponent = () => {
   const router = useRouter();
+  const { title, note, completed, updatedAt } = useAppSelector(selectCurrentTodo);
+  const id = useAppSelector(selectCurrentTodoId);
   const dispatch = useAppDispatch();
 
   const toggleCompleted = async () => {
     try {
+      dispatch(registerCurrentTodo({ id, todo: { title, note, completed: !completed, updatedAt } }));
       await updateDoc(doc(db, "todos", id), {
         completed: !completed,
       });
@@ -43,29 +62,19 @@ const TodoCard: FunctionComponent<Props> = ({ id, todo: { title, note, completed
 
   const destroy = async () => {
     try {
+      backToHome();
       await deleteDoc(doc(db, "todos", id));
     } catch (error) {
       console.log("Error trying to remove todo: ", error);
     }
   };
 
-  const handleClick = () => {
-    dispatch(registerCurrentTodo({ id, todo: { title, note, completed, createdAt, updatedAt } }));
-    router.push(`#${id}`);
-  };
-
-  const variants: Variants = {
-    initial: { scale: 0, opacity: 0 },
-    animate: {
-      scale: 1,
-      opacity: 1,
-      transition: { delay: isHovered ? 0 : 0.3 },
-    },
-    exit: { opacity: 0, scale: 0 },
+  const backToHome = () => {
+    router.push("/");
   };
 
   return (
-    <div>
+    <div style={styles.modalContainer}>
       <style jsx>{`
         .deleteIconContainer {
           font-size: 1.1rem;
@@ -90,26 +99,22 @@ const TodoCard: FunctionComponent<Props> = ({ id, todo: { title, note, completed
         }
       `}</style>
       <motion.div
-        // drag
-        // dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-        initial='initial'
-        animate='animate'
-        exit='exit'
-        variants={variants}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0, transition: { duration: 0.15 } }}
+        style={styles.overlay}
+        onClick={backToHome}></motion.div>
+      <motion.div
+        drag
+        dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
         layoutId={`card-container-${id}`}
-        style={styles.cardContainer}
-        whileHover={{ scale: 1.05 }}
-        onHoverStart={() => setIsHovered(true)}
-        onHoverEnd={() => setIsHovered(false)}
-        onClick={handleClick}>
+        style={styles.cardContainer}>
         <Card
           title={<Title completed={completed} title={title} id={id} toggleCompleted={toggleCompleted} />}
           bordered={false}
           style={{ ...styles.card, opacity: completed ? 0.6 : 1 }}>
           <motion.div layoutId={`card-note-${id}`}>
-            <Typography>
-              {note.length > 380 ? note.slice(0, 380).split(" ").slice(0, -1).join(" ") + "..." : note}
-            </Typography>
+            <Typography>{note}</Typography>
           </motion.div>
           <div style={{ marginTop: "1rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
             <motion.div layoutId={`card-updatedAt-${id}`}>
@@ -120,11 +125,7 @@ const TodoCard: FunctionComponent<Props> = ({ id, todo: { title, note, completed
             <motion.div layoutId={`card-deleteIcon-${id}`}>
               <Popconfirm
                 title='Are you sure to delete this todo?'
-                onConfirm={(e) => {
-                  e?.stopPropagation();
-                  setTimeout(destroy, 200);
-                }}
-                onCancel={(e) => e?.stopPropagation()}
+                onConfirm={() => setTimeout(destroy, 200)}
                 okText='Yes'
                 icon={<QuestionCircleOutlined style={{ color: "red" }} />}
                 cancelText='No'>
@@ -141,12 +142,10 @@ const TodoCard: FunctionComponent<Props> = ({ id, todo: { title, note, completed
 };
 
 const Title: FunctionComponent<any> = ({ completed, toggleCompleted, title, id }) => {
-  const truncatedTitle = title.length > 100 ? title.slice(0, 100).split(" ").slice(0, -1).join(" ") + "..." : title;
-
   return (
     <motion.div layoutId={`card-title-${id}`} style={{ display: "flex", alignItems: "center" }}>
       <motion.div layoutId={`card-title-text-${id}`} style={{ marginRight: "auto" }}>
-        <Typography style={{ whiteSpace: "break-spaces" }}>{truncatedTitle}</Typography>
+        <Typography style={{ whiteSpace: "break-spaces" }}>{title}</Typography>
       </motion.div>
       <motion.div layoutId={`card-switch-${id}`} onClick={(e) => e.stopPropagation()}>
         <Switch
