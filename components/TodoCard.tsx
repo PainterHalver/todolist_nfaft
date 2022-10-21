@@ -71,7 +71,11 @@ const Title: FunctionComponent<any> = ({ completed, toggleCompleted, title }) =>
   return (
     <div style={{ display: "flex", alignItems: "center" }}>
       <Typography style={{ display: "inline", marginRight: "auto" }}>{title}</Typography>
-      <Switch checked={completed} onChange={toggleCompleted} />
+      <Switch
+        checked={completed}
+        onChange={toggleCompleted}
+        style={{ backgroundColor: completed ? "#ff7979" : "#bfbfbf" }}
+      />
     </div>
   );
 };
