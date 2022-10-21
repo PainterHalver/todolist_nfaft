@@ -43,10 +43,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     // Generate JWT
-    const token = jwt.sign({ username: user.username, email: user.email, id: user.id }, process.env.JWT_SECRET!);
+    const token = jwt.sign({ username: user.username, id: user.id }, process.env.JWT_SECRET!);
     const firebaseToken = await getAuth(app).createCustomToken(user.id, {
       username: user.username,
-      email: user.email,
       id: user.id,
       note: "This is an additional claim!",
     });

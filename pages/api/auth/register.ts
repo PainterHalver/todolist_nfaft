@@ -5,7 +5,6 @@ import { getAuth } from "firebase-admin/auth";
 import app from "../../../lib/firebase_admin";
 
 type RegisterErrorType = {
-  email?: String;
   username?: String;
   password?: String;
 };
@@ -16,23 +15,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { email, password, username, confirmPassword } = req.body;
+    const { username, password, confirmPassword } = req.body;
 
     const errors: RegisterErrorType = {};
     // Validate the data
     if (!password || !password.trim()) errors["password"] = "Password must not be empty";
     if (password !== confirmPassword) errors["password"] = "Passwords do not match";
-
-    // Email validation
-    if (!email || !email.trim()) errors["email"] = "Email must not be empty";
-    else {
-      const emailUser = await prisma.user.findFirst({
-        where: {
-          email,
-        },
-      });
-      if (emailUser) errors["email"] = "Email already exists";
-    }
 
     // Username validation
     if (!username || !username.trim()) errors["username"] = "Username must not be empty";
@@ -52,20 +40,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Create user
     const newUser = await prisma.user.create({
       data: {
-        email,
         password,
         username,
       },
     });
 
     // Generate JWT
-    const token = jwt.sign(
-      { username: newUser.username, email: newUser.email, id: newUser.id },
-      process.env.JWT_SECRET!
-    );
+    const token = jwt.sign({ username: newUser.username, id: newUser.id }, process.env.JWT_SECRET!);
     const firebaseToken = await getAuth(app).createCustomToken(newUser.id, {
       username: newUser.username,
-      email: newUser.email,
       id: newUser.id,
       note: "This is an additional claim!",
     });

@@ -32,13 +32,11 @@ const variants: Variants = {
 };
 
 type RegisterErrorType = {
-  email?: String;
   username?: String;
   password?: String;
 };
 
 type RegisterData = {
-  email: String;
   username: String;
   password: String;
   confirmPassword: String;
@@ -100,21 +98,6 @@ const Register: FunctionComponent<CustomComponentProps> = ({ setFromNoHeaderRout
         autoComplete='off'
         layout='vertical'>
         <Title style={{ textAlign: "center" }}>Register</Title>
-        <Form.Item
-          label='Email'
-          name='email'
-          rules={[
-            { required: true, message: "Please input your email!" },
-            {
-              type: "email",
-              message: "Please input a valid email!",
-              validateTrigger: "onChange", // onBlur is not working
-            },
-          ]}
-          help={errors?.email}
-          validateStatus={errors?.email ? "error" : ""}>
-          <Input onChange={() => setErrors({ ...errors, email: undefined })} />
-        </Form.Item>
 
         <Form.Item
           label='Username'
