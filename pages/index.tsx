@@ -8,10 +8,9 @@ import {
   query,
   serverTimestamp,
 } from "firebase/firestore";
-import { AnimatePresence, AnimateSharedLayout, motion, Variants } from "framer-motion";
+import { AnimatePresence, motion, Variants } from "framer-motion";
 import { CSSProperties, FormEvent, FunctionComponent, useEffect, useRef, useState } from "react";
 import TodoCard from "../components/TodoCard";
-import AddTodoForm from "../components/AddTodoForm";
 import db from "../lib/firebase";
 import { Button } from "antd";
 
@@ -48,6 +47,7 @@ const styles: { [key: string]: CSSProperties } = {
     width: "100%",
     height: "100%",
     display: "grid",
+    // gridTemplateColumns: "repeat(3, minmax(0, 1fr))", // exact same width
     gridTemplateColumns: "repeat(3, 1fr)",
     gap: "2rem",
     // backgroundColor: "red",
