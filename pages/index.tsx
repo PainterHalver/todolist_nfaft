@@ -120,6 +120,7 @@ const Home: FunctionComponent = () => {
         variants={{
           animate: { height: "auto" },
         }}
+        transition={{ duration: 0.3 }}
         layout
         key='add-todo'
         style={styles.addTodoContainer}

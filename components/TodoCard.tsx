@@ -63,7 +63,7 @@ const TodoCard: FunctionComponent<Props> = ({ id, todo: { title, note, completed
         animate='animate'
         exit='exit'
         variants={variants}
-        layout
+        layoutId={`card-container-${id}`}
         style={styles.cardContainer}
         whileHover={{ scale: 1.05 }}
         onHoverStart={() => setIsHovered(true)}
