@@ -32,12 +32,11 @@ const styles: { [key: string]: CSSProperties } = {
     backgroundColor: "white",
     color: "black",
     marginBottom: "1.5rem",
-    width: "60%",
+    width: "66%",
     minWidth: "450px",
     borderRadius: "3px",
     padding: ".5rem .7rem",
     fontSize: "1rem",
-    fontWeight: 400,
     letterSpacing: "0.00938em",
 
     height: "-1px", // don't know why this is needed, but it is
@@ -64,9 +63,12 @@ const containerVariants: Variants = {
 const Home: FunctionComponent = () => {
   const [isAddTodoOpen, setIsAddTodoOpen] = useState(false);
   const addTodoTitle = useRef<HTMLTextAreaElement>(null);
+  const addTodoNote = useRef<HTMLTextAreaElement>(null);
   const [todos, setTodos] = useState<DocumentData[]>([]);
 
   useEffect(() => {
+    resizeTextarea(addTodoTitle.current!);
+
     const unsubscribe = onSnapshot(
       query(collection(db, "todos"), orderBy("completed", "asc"), orderBy("updatedAt", "desc")),
       (snapshot) => setTodos(snapshot.docs),
@@ -80,14 +82,13 @@ const Home: FunctionComponent = () => {
   const addTodo = async (e: FormEvent) => {
     e.preventDefault();
 
-    const { title, note } = e.target as typeof e.target & {
-      title: { value: string };
-      note: { value: string };
-    };
+    const title = addTodoTitle.current?.value;
+    const note = addTodoNote.current?.value;
+
     try {
       const docRef: DocumentReference = await addDoc(collection(db, "todos"), {
-        title: title.value,
-        note: note.value,
+        title: title,
+        note: note,
         completed: false,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
@@ -98,6 +99,7 @@ const Home: FunctionComponent = () => {
   };
 
   const resizeTextarea = (element: HTMLTextAreaElement) => {
+    if (!element) return;
     element.style.height = "1px";
     element.style.height = element.scrollHeight + "px";
   };
@@ -137,7 +139,8 @@ const Home: FunctionComponent = () => {
             <textarea
               name='note'
               placeholder='Add a note...'
-              style={{ border: "none", marginTop: "0.7rem", resize: "none" }}
+              style={{ border: "none", marginTop: "0.7rem", resize: "none", height: "1.85rem" }}
+              ref={addTodoNote}
               onChange={(e) => resizeTextarea(e.target)}
             />
             <div style={{ textAlign: "center", marginTop: "1.2rem" }}>
@@ -150,9 +153,11 @@ const Home: FunctionComponent = () => {
         )}
       </motion.form>
       <div style={styles.wrapper}>
-        {todos.map((todo) => (
-          <TodoCard todo={todo.data()} id={todo.id} key={todo.id} />
-        ))}
+        <AnimatePresence>
+          {todos.map((todo) => (
+            <TodoCard todo={todo.data()} id={todo.id} key={todo.id} />
+          ))}
+        </AnimatePresence>
       </div>
     </motion.div>
   );

@@ -1,7 +1,7 @@
 import { Card, Switch, Typography } from "antd";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { motion, Variants } from "framer-motion";
-import React, { CSSProperties, FunctionComponent } from "react";
+import { motion, useIsPresent, Variants } from "framer-motion";
+import React, { CSSProperties, FunctionComponent, useState } from "react";
 import db from "../lib/firebase";
 import { Todo } from "../lib/types";
 
@@ -20,13 +20,9 @@ const styles: { [key: string]: CSSProperties | { [key: string]: CSSProperties } 
   },
 };
 
-const variants: Variants = {
-  initial: { scale: 0 },
-  animate: { scale: 1 },
-  exit: { opacity: 0, scale: 0 },
-};
-
 const TodoCard: FunctionComponent<Props> = ({ id, todo: { title, note, completed, createdAt, updatedAt } }) => {
+  const [isHovered, setIsHovered] = useState(false);
+
   const toggleCompleted = async () => {
     try {
       updateDoc(doc(db, "todos", id), {
@@ -45,6 +41,16 @@ const TodoCard: FunctionComponent<Props> = ({ id, todo: { title, note, completed
     }
   };
 
+  const variants: Variants = {
+    initial: { scale: 0, opacity: 0 },
+    animate: {
+      scale: 1,
+      opacity: 1,
+      transition: { delay: isHovered ? 0 : 0.3 },
+    },
+    exit: { opacity: 0, scale: 0 },
+  };
+
   return (
     <motion.div
       initial='initial'
@@ -53,14 +59,16 @@ const TodoCard: FunctionComponent<Props> = ({ id, todo: { title, note, completed
       variants={variants}
       layout
       style={styles.cardContainer}
-      whileHover={{ scale: 1.05 }}>
+      whileHover={{ scale: 1.05 }}
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}>
       <Card
         title={<Title completed={completed} title={title} toggleCompleted={toggleCompleted} />}
         bordered={false}
         style={{ ...styles.card, opacity: completed ? 0.6 : 1 }}>
         <Typography>{note}</Typography>
         <Typography style={{ opacity: 0.6, textAlign: "right", marginTop: "1rem" }}>
-          {updatedAt.toDate().toISOString()}
+          {updatedAt?.toDate().toISOString()}
         </Typography>
       </Card>
     </motion.div>
