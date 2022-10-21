@@ -72,6 +72,9 @@ const Login: FunctionComponent<CustomComponentProps> = ({ setFromNoHeaderRoute }
       // Set JWT
       localStorage.setItem("token", res.data.token);
 
+      // Set firebase token
+      localStorage.setItem("firebaseToken", res.data.firebaseToken);
+
       message.success({ content: "Successfully logged in!", key: "login" });
       console.log(res);
     } catch (error: unknown | AxiosError) {

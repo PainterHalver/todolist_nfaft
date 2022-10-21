@@ -74,6 +74,9 @@ const Register: FunctionComponent<CustomComponentProps> = ({ setFromNoHeaderRout
       // Set JWT
       localStorage.setItem("token", res.data.token);
 
+      // Set firebase token
+      localStorage.setItem("firebaseToken", res.data.firebaseToken);
+
       message.success({ content: "Successfully registed!", key: "register" });
       console.log(res);
     } catch (error: unknown | AxiosError) {

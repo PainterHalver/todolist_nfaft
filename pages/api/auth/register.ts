@@ -1,6 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import jwt from "jsonwebtoken";
 import prisma from "../../../lib/prisma";
+import { getAuth } from "firebase-admin/auth";
+import app from "../../../lib/firebase_admin";
 
 type RegisterErrorType = {
   email?: String;
@@ -61,9 +63,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       { username: newUser.username, email: newUser.email, id: newUser.id },
       process.env.JWT_SECRET!
     );
+    const firebaseToken = await getAuth(app).createCustomToken(newUser.id, {
+      username: newUser.username,
+      email: newUser.email,
+      id: newUser.id,
+      note: "This is an additional claim!",
+    });
 
     // Return user
-    return res.status(201).json({ message: "success", user: newUser, token });
+    return res.status(201).json({ message: "success", user: newUser, token, firebaseToken });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
