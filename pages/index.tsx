@@ -88,7 +88,7 @@ const Home: FunctionComponent = () => {
 
     // Cleanup
     return () => unsubscribe();
-  }, [db]);
+  }, []);
 
   const addTodo = async (e: FormEvent) => {
     e.preventDefault();

@@ -13,7 +13,7 @@ export default function ErrorPage() {
   return (
     <div style={{ textAlign: "center" }}>
       <Typography.Title style={styles.title}>404</Typography.Title>
-      <Typography.Title style={styles.title}>You're stepping into the unknown.</Typography.Title>
+      <Typography.Title style={styles.title}>You&apos;re stepping into the unknown.</Typography.Title>
     </div>
   );
 }
