@@ -8,4 +8,3 @@
 6. If `motion` is not working, try adding `layout` or `key` prop.
 7. `whiteSpace: "break-spaces"` to break line.
 8. Prevent Event Trigger on Parent From Child using `stopPropagation` ([stackoverflow](https://stackoverflow.com/questions/37568550/react-prevent-event-trigger-on-parent-from-child)).
-9. Prevent scrollbar layout shift ([stackoverflow](https://stackoverflow.com/a/54979559))

@@ -6,7 +6,7 @@ body {
     Helvetica Neue, sans-serif;
   background-color: #d7edfe !important;
 
-  overflow-y: overlay;
+  -ms-overflow-style: none;
 }
 
 a {
@@ -21,4 +21,7 @@ a {
 input:focus,
 textarea:focus {
   outline: none;
+}
+::-webkit-scrollbar {
+  display: none;
 }
