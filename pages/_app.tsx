@@ -5,7 +5,7 @@ const { Header, Content, Footer } = Layout;
 import "antd/dist/antd.css";
 import { useRouter } from "next/router";
 import axios from "axios";
-import { motion, AnimatePresence, Variants } from "framer-motion";
+import { motion, AnimatePresence, Variants, LayoutGroup } from "framer-motion";
 import { CSSProperties, useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import store from "../redux/store";
@@ -58,9 +58,11 @@ const styles: { [key: string]: CSSProperties | { [key: string]: CSSProperties } 
 export default function MyApp({ Component, pageProps, router }: AppProps) {
   return (
     <Provider store={store}>
-      <AnimatePresence mode='wait'>
-        <AppLayout Component={Component} pageProps={pageProps} router={router} key={router.route} />
-      </AnimatePresence>
+      <LayoutGroup>
+        <AnimatePresence mode='wait'>
+          <AppLayout Component={Component} pageProps={pageProps} router={router} key={router.route} />
+        </AnimatePresence>
+      </LayoutGroup>
     </Provider>
   );
 }
@@ -161,7 +163,9 @@ function AppLayout({ Component, pageProps }: AppProps) {
           <Component {...pageProps} setFromNoHeaderRoute={setFromNoHeaderRoute} />
         </Content>
         <motion.div variants={footerVariants} transition={{ type: "tween" }}>
-          <Footer style={styles.footer}>© 2022 PainterHalver. All Rights Reserved.</Footer>
+          <Footer style={styles.footer}>
+            <motion.div layout>© 2022 PainterHalver. All Rights Reserved.</motion.div>
+          </Footer>
         </motion.div>
       </Layout>
     </motion.div>
