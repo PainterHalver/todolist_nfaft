@@ -20,6 +20,7 @@ export default function Logout() {
   useEffect(() => {
     dispatch(logout());
     localStorage.removeItem("token");
+    localStorage.removeItem("firebaseToken");
     router.push("/");
   });
 

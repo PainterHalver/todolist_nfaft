@@ -1,10 +1,13 @@
 import admin from "firebase-admin";
 import { initializeApp, getApp, getApps, ServiceAccount } from "firebase-admin/app";
-import serviceAccount from "./firebase_adminsdk.json";
+
+// import serviceAccount from "./firebase_adminsdk.json";
+
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY!) as ServiceAccount;
 
 const app = !getApps().length
   ? initializeApp({
-      credential: admin.credential.cert(serviceAccount as ServiceAccount),
+      credential: admin.credential.cert(serviceAccount),
       databaseURL: "https://todo-nextjs-b29ae.firebaseio.com",
     })
   : getApp();
