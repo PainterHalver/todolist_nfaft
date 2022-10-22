@@ -1,9 +1,9 @@
 import { DeleteOutlined, QuestionCircleOutlined } from "@ant-design/icons";
-import { Card, Popconfirm, Switch, Typography } from "antd";
-import { deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { Button, Card, message, Popconfirm, Switch, Typography } from "antd";
+import { deleteDoc, doc, serverTimestamp, Timestamp, updateDoc } from "firebase/firestore";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
-import React, { CSSProperties, FunctionComponent } from "react";
+import React, { CSSProperties, FunctionComponent, useEffect, useRef } from "react";
 import db from "../lib/firebase";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { selectCurrentTodo, selectCurrentTodoId, registerCurrentTodo } from "../redux/todoSlice";
@@ -49,9 +49,18 @@ const TodoCard: FunctionComponent = () => {
   const id = useAppSelector(selectCurrentTodoId);
   const dispatch = useAppDispatch();
 
+  const titleRef = useRef<HTMLDivElement>(null);
+  const noteRef = useRef<HTMLDivElement>(null);
+
   const toggleCompleted = async () => {
     try {
-      dispatch(registerCurrentTodo({ id, todo: { title, note, completed: !completed, updatedAt } }));
+      const timestamp = serverTimestamp();
+      dispatch(
+        registerCurrentTodo({
+          id,
+          todo: { title, note, completed: !completed, updatedAt: new Date().toISOString() },
+        })
+      );
       await updateDoc(doc(db, "todos", id), {
         completed: !completed,
       });
@@ -69,35 +78,36 @@ const TodoCard: FunctionComponent = () => {
     }
   };
 
+  const update = async () => {
+    if (!titleRef.current || !noteRef.current) return;
+
+    const title = titleRef.current.textContent || "";
+    const note = noteRef.current.textContent || "";
+
+    message.loading({ content: "Updating...", key: "update" });
+    try {
+      const timestamp = serverTimestamp();
+      const todoRef = doc(db, "todos", id);
+      await updateDoc(todoRef, {
+        title,
+        note,
+        updatedAt: timestamp,
+      });
+      message.success({ content: "Updated!", key: "update" });
+      dispatch(registerCurrentTodo({ id, todo: { title, note, completed, updatedAt: new Date().toISOString() } }));
+      // backToHome();
+    } catch (error) {
+      console.log("Error trying to update todo: ", error);
+      message.error({ content: "Error trying to update todo", key: "update" });
+    }
+  };
+
   const backToHome = () => {
     router.push("/");
   };
 
   return (
     <div style={styles.modalContainer}>
-      <style jsx>{`
-        .deleteIconContainer {
-          font-size: 1.1rem;
-          opacity: 0.6;
-          aspect-ratio: 1/1;
-          padding: 0 0.2rem;
-          transition: all 0.1s ease;
-          border-radius: 50%;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 1.9rem;
-          border: none;
-          background-color: transparent;
-        }
-
-        .deleteIconContainer:hover {
-          color: red;
-          cursor: pointer;
-          background-color: #00000011;
-          opacity: 1;
-        }
-      `}</style>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -110,29 +120,34 @@ const TodoCard: FunctionComponent = () => {
         layoutId={`card-container-${id}`}
         style={styles.cardContainer}>
         <Card
-          title={<Title completed={completed} title={title} id={id} toggleCompleted={toggleCompleted} />}
+          title={
+            <Title completed={completed} title={title} titleRef={titleRef} id={id} toggleCompleted={toggleCompleted} />
+          }
           bordered={false}
           style={{ ...styles.card, opacity: completed ? 0.6 : 1 }}>
-          <motion.div layoutId={`card-note-${id}`}>
-            <Typography>{note}</Typography>
+          <motion.div layoutId={`card-note-${id}`} contentEditable ref={noteRef} suppressContentEditableWarning={true}>
+            {note}
           </motion.div>
-          <div style={{ marginTop: "1rem", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <motion.div layoutId={`card-updatedAt-${id}`}>
-              <Typography style={{ opacity: 0.6, textAlign: "right", display: "inline" }}>
-                {updatedAt?.toDate().toISOString()}
-              </Typography>
+          <div style={{ marginTop: "1rem", display: "flex", justifyContent: "start", alignItems: "center" }}>
+            <motion.div layoutId={`card-updatedAt-${id}`} style={{ marginRight: "auto" }}>
+              <Typography style={{ opacity: 0.6, display: "inline" }}>{updatedAt && updatedAt}</Typography>
             </motion.div>
-            <motion.div layoutId={`card-deleteIcon-${id}`}>
+            <motion.div>
               <Popconfirm
                 title='Are you sure to delete this todo?'
                 onConfirm={() => setTimeout(destroy, 200)}
                 okText='Yes'
                 icon={<QuestionCircleOutlined style={{ color: "red" }} />}
                 cancelText='No'>
-                <button className='deleteIconContainer' onClick={(e) => e.stopPropagation()}>
-                  <DeleteOutlined className='' />
-                </button>
+                <Button type='primary' danger>
+                  Delete
+                </Button>
               </Popconfirm>
+            </motion.div>
+            <motion.div style={{ marginLeft: "1rem" }}>
+              <Button type='primary' onClick={update}>
+                Update
+              </Button>
             </motion.div>
           </div>
         </Card>
@@ -141,11 +156,26 @@ const TodoCard: FunctionComponent = () => {
   );
 };
 
-const Title: FunctionComponent<any> = ({ completed, toggleCompleted, title, id }) => {
+const Title: FunctionComponent<any> = ({ completed, toggleCompleted, title, id, titleRef }) => {
+  useEffect(() => {
+    // Move cursor to the end of the title
+    if (titleRef.current) {
+      titleRef.current.focus();
+      document.execCommand("selectAll", false, undefined);
+      document.getSelection()?.collapseToEnd();
+    }
+  }, []);
+
   return (
     <motion.div layoutId={`card-title-${id}`} style={{ display: "flex", alignItems: "center" }}>
-      <motion.div layoutId={`card-title-text-${id}`} style={{ marginRight: "auto" }}>
-        <Typography style={{ whiteSpace: "break-spaces" }}>{title}</Typography>
+      <motion.div layoutId={`card-title-text-${id}`} style={{ flex: 1 }}>
+        <div
+          contentEditable
+          suppressContentEditableWarning={true}
+          style={{ whiteSpace: "break-spaces" }}
+          ref={titleRef}>
+          {title}
+        </div>
       </motion.div>
       <motion.div layoutId={`card-switch-${id}`} onClick={(e) => e.stopPropagation()}>
         <Switch

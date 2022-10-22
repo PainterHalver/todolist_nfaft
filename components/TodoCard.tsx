@@ -1,17 +1,17 @@
 import { DeleteOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { Card, Popconfirm, Switch, Typography } from "antd";
-import { deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { deleteDoc, doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { motion, Variants } from "framer-motion";
 import { useRouter } from "next/router";
 import React, { CSSProperties, FunctionComponent, useState } from "react";
 import db from "../lib/firebase";
-import { Todo } from "../lib/types";
+import { TodoFirestoreType } from "../lib/types";
 import { useAppDispatch } from "../redux/store";
 import { registerCurrentTodo } from "../redux/todoSlice";
 
 type Props = {
   id: string;
-  todo: Todo;
+  todo: TodoFirestoreType;
 };
 
 const styles: { [key: string]: CSSProperties | { [key: string]: CSSProperties } } = {
@@ -35,6 +35,7 @@ const TodoCard: FunctionComponent<Props> = ({ id, todo: { title, note, completed
     try {
       await updateDoc(doc(db, "todos", id), {
         completed: !completed,
+        updatedAt: serverTimestamp(),
       });
     } catch (error) {
       console.log("Error trying to complete todo: ", error);
@@ -50,7 +51,18 @@ const TodoCard: FunctionComponent<Props> = ({ id, todo: { title, note, completed
   };
 
   const handleClick = () => {
-    dispatch(registerCurrentTodo({ id, todo: { title, note, completed, createdAt, updatedAt } }));
+    dispatch(
+      registerCurrentTodo({
+        id,
+        todo: {
+          title,
+          note,
+          completed,
+          createdAt: createdAt.toDate().toISOString(),
+          updatedAt: updatedAt.toDate().toISOString(),
+        },
+      })
+    );
     router.push(`#${id}`);
   };
 
@@ -117,7 +129,7 @@ const TodoCard: FunctionComponent<Props> = ({ id, todo: { title, note, completed
                 {updatedAt?.toDate().toISOString()}
               </Typography>
             </motion.div>
-            <motion.div layoutId={`card-deleteIcon-${id}`}>
+            <motion.div>
               <Popconfirm
                 title='Are you sure to delete this todo?'
                 onConfirm={(e) => {
@@ -146,7 +158,7 @@ const Title: FunctionComponent<any> = ({ completed, toggleCompleted, title, id }
   return (
     <motion.div layoutId={`card-title-${id}`} style={{ display: "flex", alignItems: "center" }}>
       <motion.div layoutId={`card-title-text-${id}`} style={{ marginRight: "auto" }}>
-        <Typography style={{ whiteSpace: "break-spaces" }}>{truncatedTitle}</Typography>
+        <div style={{ whiteSpace: "break-spaces" }}>{truncatedTitle}</div>
       </motion.div>
       <motion.div layoutId={`card-switch-${id}`} onClick={(e) => e.stopPropagation()}>
         <Switch

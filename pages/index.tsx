@@ -80,7 +80,9 @@ const Home: FunctionComponent = () => {
 
     const unsubscribe = onSnapshot(
       query(collection(db, "todos"), orderBy("completed", "asc"), orderBy("updatedAt", "desc")),
-      (snapshot) => setTodos(snapshot.docs),
+      (snapshot) => {
+        setTodos(snapshot.docs);
+      },
       (error) => console.log(error)
     );
 

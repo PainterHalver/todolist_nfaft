@@ -1,11 +1,18 @@
+import { TodoStateType } from "./../lib/types";
 import { createSlice } from "@reduxjs/toolkit";
-import { Todo } from "../lib/types";
 import type { AppState } from "./store";
 
 // Type for our state
 interface TodoState {
   currentTodoId: string;
-  currentTodo: Todo;
+  currentTodo: TodoStateType;
+}
+
+interface ActionType {
+  payload: {
+    id: string;
+    todo: TodoStateType;
+  };
 }
 
 // Initial state
@@ -23,13 +30,13 @@ const todoSlice = createSlice({
   name: "todo",
   initialState,
   reducers: {
-    registerCurrentTodo: (state, action) => {
+    registerCurrentTodo: (state, action: ActionType) => {
       state.currentTodoId = action.payload.id;
       state.currentTodo = action.payload.todo;
     },
     unregisterCurrentTodo: (state) => {
       state.currentTodoId = "";
-      state.currentTodo = null;
+      state.currentTodo = initialState.currentTodo;
     },
   },
 });
