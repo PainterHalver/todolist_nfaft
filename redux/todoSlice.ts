@@ -31,12 +31,18 @@ const todoSlice = createSlice({
   initialState,
   reducers: {
     registerCurrentTodo: (state, action: ActionType) => {
-      state.currentTodoId = action.payload.id;
-      state.currentTodo = action.payload.todo;
+      return {
+        ...state,
+        currentTodoId: action.payload.id,
+        currentTodo: action.payload.todo,
+      };
     },
     unregisterCurrentTodo: (state) => {
-      state.currentTodoId = "";
-      state.currentTodo = initialState.currentTodo;
+      return {
+        ...state,
+        currentTodoId: "",
+        currentTodo: initialState.currentTodo,
+      };
     },
   },
 });

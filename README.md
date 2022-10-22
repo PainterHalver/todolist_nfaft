@@ -8,3 +8,4 @@
 6. If `motion` is not working, try adding `layout` or `key` prop.
 7. `whiteSpace: "break-spaces"` to break line.
 8. Prevent Event Trigger on Parent From Child using `stopPropagation` ([stackoverflow](https://stackoverflow.com/questions/37568550/react-prevent-event-trigger-on-parent-from-child)).
+9. Update redux state variable by returning a new object to trigger re-render ([stackoverflow](https://stackoverflow.com/questions/58850699/useselector-not-updating-when-store-has-changed-in-reducer-reactjs-redux)).
