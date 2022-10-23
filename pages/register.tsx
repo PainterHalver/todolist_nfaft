@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { selectAuthenticated, login } from "../redux/authSlice";
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import { CustomComponentProps } from "./_app";
+import { getAuth, signInWithCustomToken } from "firebase/auth";
 
 const { Title } = Typography;
 
@@ -61,10 +62,16 @@ const Register: FunctionComponent<CustomComponentProps> = ({ setFromNoHeaderRout
   }, [authenticated]);
 
   const onFinish = async (data: RegisterData) => {
-    message.loading({ content: "Loading...", key: "register" });
     setLoading(true);
     try {
+      message.loading({ content: "Registering account on server...", key: "register", duration: 60 });
       const res = await axios.post("/auth/register", data);
+
+      // Sign in firebase
+      message.loading({ content: "Signing in firebase...", key: "register", duration: 60 });
+      const auth = getAuth();
+      const userCredentials = await signInWithCustomToken(auth, res.data.firebaseToken);
+      console.log({ userCredentials });
 
       // Set state
       dispatch(login(res.data.user));

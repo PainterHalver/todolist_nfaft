@@ -8,6 +8,7 @@ export type TodoStateType = {
 };
 
 export type TodoFirestoreType = {
+  uid: string | null;
   title: string;
   note: string;
   completed: boolean;

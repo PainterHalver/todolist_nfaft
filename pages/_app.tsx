@@ -13,7 +13,9 @@ import { useAppSelector, useAppDispatch } from "../redux/store";
 import { selectAuthenticated, login, selectUser } from "../redux/authSlice";
 import Link from "next/link";
 import { GLOBAL_USERNAME } from "../lib/constants";
-import { logout } from "../redux/authSlice";
+import { Auth, getAuth, signInWithCustomToken } from "firebase/auth";
+import { app } from "../lib/firebase";
+import { auth } from "firebase-admin";
 
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -87,14 +89,27 @@ function AppLayout({ Component, pageProps }: AppProps) {
   const authenticated = useAppSelector(selectAuthenticated);
   const user = useAppSelector(selectUser);
   const [fromNoHeaderRoute, setFromNoHeaderRoute] = useState(false);
+  const [appAuth, setAppAuth] = useState<Auth | null>(null);
 
-  const logMeOut = () => {
-    dispatch(logout());
+  const logMeOut = async () => {
+    // dispatch(logout());
     localStorage.removeItem("token");
     localStorage.removeItem("firebaseToken");
 
-    // router.push("/");
-    window.location.reload();
+    try {
+      message.loading({ content: "Logging out of Firebase...", key: "logout", duration: 60 });
+      // Sign out of Firebase
+      if (appAuth) {
+        await appAuth.signOut();
+      } else {
+        await getAuth().signOut();
+      }
+
+      // router.push("/");
+      window.location.reload();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const headerVariants: Variants = {
@@ -119,20 +134,35 @@ function AppLayout({ Component, pageProps }: AppProps) {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) {
+    const firebaseToken = localStorage.getItem("firebaseToken");
+    if (!token || !firebaseToken) {
       return;
-    } else {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
     }
 
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+    const auth = getAuth(app);
+    setAppAuth(auth);
     (async () => {
       try {
         if (!authenticated) {
+          // Login to server
           const res = await axios.get("/auth/me");
+          // Login to firebase
+          message.loading({ content: "Signing in firebase...", key: "login", duration: 60 });
+          const userCredentials = await signInWithCustomToken(auth, firebaseToken);
+          console.log({ userCredentials });
+          message.success({ content: "Signed in firebase!", key: "login" });
+
           dispatch(login(res.data.user));
         }
       } catch (error) {
         console.log(error);
+      } finally {
+        // Load additional claims
+        // if (auth.currentUser) {
+        //   const { claims } = await auth.currentUser.getIdTokenResult();
+        // }
       }
     })();
   }, []);
@@ -149,7 +179,8 @@ function AppLayout({ Component, pageProps }: AppProps) {
                   <Button>Ssred</Button>
                 </Link>
                 <Typography style={{ color: "white", fontSize: "1rem" }}>
-                  Hello {authenticated ? user?.username : GLOBAL_USERNAME}
+                  Hello {authenticated ? user?.username : GLOBAL_USERNAME}, FIREBASE:{" "}
+                  {appAuth && appAuth.currentUser ? appAuth.currentUser.uid : "No auth"}
                 </Typography>
               </div>
               {authenticated ? (

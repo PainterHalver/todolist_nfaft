@@ -1,12 +1,14 @@
 import { Button, Form, Input, Typography, message } from "antd";
 import Link from "next/link";
-import { CSSProperties, Fragment, FunctionComponent, useEffect, useState } from "react";
+import { CSSProperties, FunctionComponent, useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { selectAuthenticated, login } from "../redux/authSlice";
 import { useRouter } from "next/router";
 import { motion, Variants } from "framer-motion";
 import { CustomComponentProps } from "./_app";
+import { getAuth, signInWithCustomToken } from "firebase/auth";
+import { FirebaseError } from "firebase/app";
 
 const { Title } = Typography;
 
@@ -61,10 +63,17 @@ const Login: FunctionComponent<CustomComponentProps> = ({ setFromNoHeaderRoute }
   }, [authenticated]);
 
   const onFinish = async (data: LoginData) => {
-    message.loading({ content: "Loading...", key: "login" });
     setLoading(true);
     try {
+      // Login user and get token
+      message.loading({ content: "Signing in server...", key: "login", duration: 60 });
       const res = await axios.post("/auth/login", data);
+
+      // Sign in firebase
+      message.loading({ content: "Signing in firebase...", key: "login", duration: 60 });
+      const auth = getAuth();
+      const userCredentials = await signInWithCustomToken(auth, res.data.firebaseToken);
+      console.log({ userCredentials });
 
       // Set state
       dispatch(login(res.data.user));
@@ -77,7 +86,7 @@ const Login: FunctionComponent<CustomComponentProps> = ({ setFromNoHeaderRoute }
 
       message.success({ content: "Successfully logged in!", key: "login" });
       console.log(res);
-    } catch (error: unknown | AxiosError) {
+    } catch (error: unknown | AxiosError | FirebaseError) {
       console.log(error);
 
       // FIXME: errors.general is undefined because setErrors is not effective immediately

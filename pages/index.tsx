@@ -7,6 +7,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  where,
 } from "firebase/firestore";
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import { CSSProperties, FormEvent, FunctionComponent, useEffect, useRef, useState } from "react";
@@ -17,6 +18,9 @@ import { Button } from "antd";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
 import { unregisterCurrentTodo } from "../redux/todoSlice";
+import { getAuth } from "firebase/auth";
+import { useAppSelector } from "../redux/store";
+import { selectUser } from "../redux/authSlice";
 
 const styles: { [key: string]: CSSProperties } = {
   container: {
@@ -69,6 +73,7 @@ const Home: FunctionComponent = () => {
   const addTodoTitle = useRef<HTMLTextAreaElement>(null);
   const addTodoNote = useRef<HTMLTextAreaElement>(null);
   const [todos, setTodos] = useState<DocumentData[]>([]);
+  const reduxUser = useAppSelector(selectUser);
   const dispatch = useDispatch();
 
   const router = useRouter();
@@ -78,8 +83,19 @@ const Home: FunctionComponent = () => {
     resizeTextarea(addTodoTitle.current!);
     dispatch(unregisterCurrentTodo());
 
+    if (hash) {
+      router.push("/");
+      window.location.reload();
+    }
+
+    const user = getAuth().currentUser;
     const unsubscribe = onSnapshot(
-      query(collection(db, "todos"), orderBy("completed", "asc"), orderBy("updatedAt", "desc")),
+      query(
+        collection(db, "todos"),
+        where("uid", "==", user ? user.uid : null),
+        orderBy("completed", "asc"),
+        orderBy("updatedAt", "desc")
+      ),
       (snapshot) => {
         setTodos(snapshot.docs);
       },
@@ -88,7 +104,7 @@ const Home: FunctionComponent = () => {
 
     // Cleanup
     return () => unsubscribe();
-  }, []);
+  }, [reduxUser]);
 
   const addTodo = async (e: FormEvent) => {
     e.preventDefault();
@@ -100,7 +116,9 @@ const Home: FunctionComponent = () => {
     cancelForm();
 
     try {
+      const user = getAuth().currentUser;
       const docRef: DocumentReference = await addDoc(collection(db, "todos"), {
+        uid: user ? user.uid : null,
         title: title,
         note: note,
         completed: false,

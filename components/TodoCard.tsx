@@ -35,7 +35,6 @@ const TodoCard: FunctionComponent<Props> = ({ id, todo: { title, note, completed
     try {
       await updateDoc(doc(db, "todos", id), {
         completed: !completed,
-        updatedAt: serverTimestamp(),
       });
     } catch (error) {
       console.log("Error trying to complete todo: ", error);
