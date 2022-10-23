@@ -54,11 +54,10 @@ const TodoCard: FunctionComponent = () => {
 
   const toggleCompleted = async () => {
     try {
-      const timestamp = serverTimestamp();
       dispatch(
         registerCurrentTodo({
           id,
-          todo: { title, note, completed: !completed, updatedAt: new Date().toISOString() },
+          todo: { title, note, completed: !completed, updatedAt },
         })
       );
       await updateDoc(doc(db, "todos", id), {
@@ -84,8 +83,10 @@ const TodoCard: FunctionComponent = () => {
     const title = titleRef.current.textContent || "";
     const note = noteRef.current.textContent || "";
 
-    message.loading({ content: "Updating...", key: "update" });
+    message.loading({ content: "Updating...", key: "update", duration: 60 });
     try {
+      // FIXME: The card layout is duplicated when updating the first todo at index 0.
+
       const timestamp = serverTimestamp();
       const todoRef = doc(db, "todos", id);
       await updateDoc(todoRef, {
@@ -95,7 +96,6 @@ const TodoCard: FunctionComponent = () => {
       });
       message.success({ content: "Updated!", key: "update" });
       dispatch(registerCurrentTodo({ id, todo: { title, note, completed, updatedAt: new Date().toISOString() } }));
-      // backToHome();
     } catch (error) {
       console.log("Error trying to update todo: ", error);
       message.error({ content: "Error trying to update todo", key: "update" });

@@ -140,6 +140,7 @@ const Home: FunctionComponent = () => {
           layout
           placeholder={isAddTodoOpen ? "Title" : "Add a todo..."}
           onClick={() => setIsAddTodoOpen(true)}
+          onFocus={() => setIsAddTodoOpen(true)}
           style={{
             fontSize: "1.1rem",
             border: "none",

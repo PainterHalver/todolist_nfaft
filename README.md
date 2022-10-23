@@ -9,3 +9,5 @@
 7. `whiteSpace: "break-spaces"` to break line.
 8. Prevent Event Trigger on Parent From Child using `stopPropagation` ([stackoverflow](https://stackoverflow.com/questions/37568550/react-prevent-event-trigger-on-parent-from-child)).
 9. Update redux state variable by returning a new object to trigger re-render ([stackoverflow](https://stackoverflow.com/questions/58850699/useselector-not-updating-when-store-has-changed-in-reducer-reactjs-redux)).
+10. Pass a function to `setState` does not make it synchronous, so if we need to use the updated state immediately,
+    a good practice is to store the new state in another variable ([stackoverflow](https://stackoverflow.com/questions/68861996/usestate-undefined-in-react-just-after-set)).

@@ -1,6 +1,6 @@
 import type { AppProps } from "next/app";
 import "../styles/globals.css";
-import { Button, Layout, message } from "antd";
+import { Button, Layout, message, Typography } from "antd";
 const { Header, Content, Footer } = Layout;
 import "antd/dist/antd.css";
 import { useRouter } from "next/router";
@@ -10,8 +10,10 @@ import { CSSProperties, useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import store from "../redux/store";
 import { useAppSelector, useAppDispatch } from "../redux/store";
-import { selectAuthenticated, login } from "../redux/authSlice";
+import { selectAuthenticated, login, selectUser } from "../redux/authSlice";
 import Link from "next/link";
+import { GLOBAL_USERNAME } from "../lib/constants";
+import { logout } from "../redux/authSlice";
 
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -83,7 +85,17 @@ function AppLayout({ Component, pageProps }: AppProps) {
   const shouldShowHeader = !layoutExceptionRoutes.includes(pathname);
   const dispatch = useAppDispatch();
   const authenticated = useAppSelector(selectAuthenticated);
+  const user = useAppSelector(selectUser);
   const [fromNoHeaderRoute, setFromNoHeaderRoute] = useState(false);
+
+  const logMeOut = () => {
+    dispatch(logout());
+    localStorage.removeItem("token");
+    localStorage.removeItem("firebaseToken");
+
+    // router.push("/");
+    window.location.reload();
+  };
 
   const headerVariants: Variants = {
     initial: { y: shouldShowHeader ? -100 : "-100%", display: shouldShowHeader ? "block" : "none" },
@@ -132,16 +144,19 @@ function AppLayout({ Component, pageProps }: AppProps) {
         <motion.div variants={headerVariants} transition={{ type: "tween" }}>
           <Header style={styles.header}>
             <div style={styles.headerContent}>
-              <div style={{ marginRight: "auto" }}>
+              <div style={{ marginRight: "auto", display: "flex", alignItems: "center" }}>
                 <Link href={"/ssred"}>
                   <Button>Ssred</Button>
                 </Link>
+                <Typography style={{ color: "white", fontSize: "1rem" }}>
+                  Hello {authenticated ? user?.username : GLOBAL_USERNAME}
+                </Typography>
               </div>
               {authenticated ? (
                 <div>
-                  <Link href='/logout'>
-                    <Button danger>Logout</Button>
-                  </Link>
+                  <Button danger onClick={logMeOut}>
+                    Logout
+                  </Button>
                 </div>
               ) : (
                 <div>

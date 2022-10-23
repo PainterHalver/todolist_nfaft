@@ -79,6 +79,8 @@ const Login: FunctionComponent<CustomComponentProps> = ({ setFromNoHeaderRoute }
       console.log(res);
     } catch (error: unknown | AxiosError) {
       console.log(error);
+
+      // FIXME: errors.general is undefined because setErrors is not effective immediately
       if (axios.isAxiosError(error)) {
         setErrors(error.response?.data.errors);
       }
