@@ -11,12 +11,14 @@ import {
 } from "firebase/firestore";
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import { CSSProperties, FormEvent, FunctionComponent, useEffect, useRef, useState } from "react";
+import { Button } from "antd";
+import { useDispatch } from "react-redux";
+import Head from "next/head";
+
 import TodoCard from "../components/TodoCard";
 import TodoCardModal from "../components/TodoCardModal";
 import db from "../lib/firebase";
-import { Button } from "antd";
 import { useRouter } from "next/router";
-import { useDispatch } from "react-redux";
 import { unregisterCurrentTodo } from "../redux/todoSlice";
 import { getAuth } from "firebase/auth";
 import { useAppSelector } from "../redux/store";
@@ -58,7 +60,6 @@ const styles: { [key: string]: CSSProperties } = {
     // gridTemplateColumns: "repeat(3, minmax(0, 1fr))", // exact same width
     gridTemplateColumns: "repeat(3, 1fr)",
     gap: "2rem",
-    // backgroundColor: "red",
   },
 };
 
@@ -144,6 +145,9 @@ const Home: FunctionComponent = () => {
 
   return (
     <motion.div variants={containerVariants} transition={{ type: "linear" }} style={styles.container}>
+      <Head>
+        <title>Todolist</title>
+      </Head>
       <motion.form
         animate='animate'
         variants={{

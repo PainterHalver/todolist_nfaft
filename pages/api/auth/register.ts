@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import jwt from "jsonwebtoken";
-import prisma from "../../../lib/prisma";
 import { getAuth } from "firebase-admin/auth";
+import jwt from "jsonwebtoken";
+
+import prisma from "../../../lib/prisma";
 import app from "../../../lib/firebase_admin";
 
 type RegisterErrorType = {

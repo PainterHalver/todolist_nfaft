@@ -2,12 +2,14 @@ import { Button, Form, Input, Typography, message } from "antd";
 import Link from "next/link";
 import { CSSProperties, FunctionComponent, useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
-import { useAppDispatch, useAppSelector } from "../redux/store";
 import { useRouter } from "next/router";
-import { selectAuthenticated, login } from "../redux/authSlice";
-import { AnimatePresence, motion, Variants } from "framer-motion";
-import { CustomComponentProps } from "./_app";
+import { motion, Variants } from "framer-motion";
 import { getAuth, signInWithCustomToken } from "firebase/auth";
+import Head from "next/head";
+
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { selectAuthenticated, login } from "../redux/authSlice";
+import { CustomComponentProps } from "./_app";
 
 const { Title } = Typography;
 
@@ -97,6 +99,9 @@ const Register: FunctionComponent<CustomComponentProps> = ({ setFromNoHeaderRout
 
   return (
     <motion.div variants={variants} transition={{ type: "linear" }} style={styles.formContainer}>
+      <Head>
+        <title>Register</title>
+      </Head>
       <Form
         name='register'
         initialValues={{ remember: true }}

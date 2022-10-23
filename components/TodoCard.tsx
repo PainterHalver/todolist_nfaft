@@ -1,22 +1,17 @@
+import { CSSProperties, FunctionComponent, useState } from "react";
 import { DeleteOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { Card, Popconfirm, Switch, Typography } from "antd";
-import { deleteDoc, doc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { motion, Variants } from "framer-motion";
 import { useRouter } from "next/router";
-import React, { CSSProperties, FunctionComponent, useState } from "react";
+
 import db from "../lib/firebase";
 import { TodoFirestoreType } from "../lib/types";
 import { useAppDispatch } from "../redux/store";
 import { registerCurrentTodo } from "../redux/todoSlice";
 
-type Props = {
-  id: string;
-  todo: TodoFirestoreType;
-};
-
-const styles: { [key: string]: CSSProperties | { [key: string]: CSSProperties } } = {
+const styles: { [key: string]: CSSProperties } = {
   cardContainer: {
-    // width: "100%",
     borderRadius: "5px",
   },
   card: {
@@ -26,7 +21,12 @@ const styles: { [key: string]: CSSProperties | { [key: string]: CSSProperties } 
   },
 };
 
-const TodoCard: FunctionComponent<Props> = ({ id, todo: { title, note, completed, createdAt, updatedAt } }) => {
+type TodoCardProps = {
+  id: string;
+  todo: TodoFirestoreType;
+};
+
+const TodoCard: FunctionComponent<TodoCardProps> = ({ id, todo: { title, note, completed, createdAt, updatedAt } }) => {
   const [isHovered, setIsHovered] = useState(false);
   const router = useRouter();
   const dispatch = useAppDispatch();

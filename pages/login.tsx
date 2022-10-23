@@ -2,13 +2,15 @@ import { Button, Form, Input, Typography, message } from "antd";
 import Link from "next/link";
 import { CSSProperties, FunctionComponent, useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
-import { useAppDispatch, useAppSelector } from "../redux/store";
-import { selectAuthenticated, login } from "../redux/authSlice";
 import { useRouter } from "next/router";
 import { motion, Variants } from "framer-motion";
-import { CustomComponentProps } from "./_app";
 import { getAuth, signInWithCustomToken } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
+import Head from "next/head";
+
+import { CustomComponentProps } from "./_app";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { selectAuthenticated, login } from "../redux/authSlice";
 
 const { Title } = Typography;
 
@@ -105,6 +107,9 @@ const Login: FunctionComponent<CustomComponentProps> = ({ setFromNoHeaderRoute }
 
   return (
     <motion.div variants={variants} transition={{ type: "linear" }} style={styles.formContainer}>
+      <Head>
+        <title>Login</title>
+      </Head>
       <Form
         name='login'
         initialValues={{ remember: true }}

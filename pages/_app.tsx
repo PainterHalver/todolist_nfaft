@@ -1,21 +1,22 @@
 import type { AppProps } from "next/app";
-import "../styles/globals.css";
 import { Button, Layout, message, Typography } from "antd";
 const { Header, Content, Footer } = Layout;
-import "antd/dist/antd.css";
 import { useRouter } from "next/router";
 import axios from "axios";
 import { motion, AnimatePresence, Variants, LayoutGroup } from "framer-motion";
 import { CSSProperties, useEffect, useState } from "react";
 import { Provider } from "react-redux";
+import Link from "next/link";
+import { Auth, getAuth, signInWithCustomToken } from "firebase/auth";
+
+import "antd/dist/antd.css";
+import "../styles/globals.css";
+
 import store from "../redux/store";
 import { useAppSelector, useAppDispatch } from "../redux/store";
 import { selectAuthenticated, login, selectUser } from "../redux/authSlice";
-import Link from "next/link";
 import { GLOBAL_USERNAME } from "../lib/constants";
-import { Auth, getAuth, signInWithCustomToken } from "firebase/auth";
 import { app } from "../lib/firebase";
-import { auth } from "firebase-admin";
 
 axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -23,7 +24,7 @@ message.config({
   duration: 2,
 });
 
-const styles: { [key: string]: CSSProperties | { [key: string]: CSSProperties } } = {
+const styles: { [key: string]: CSSProperties } = {
   layout: {
     minHeight: "100vh",
     overflowX: "hidden",
@@ -83,7 +84,7 @@ export type CustomComponentProps = {
 
 function AppLayout({ Component, pageProps }: AppProps) {
   const { pathname } = useRouter();
-  const layoutExceptionRoutes = ["/login", "/register", "/404", "/logout"];
+  const layoutExceptionRoutes = ["/login", "/register"];
   const shouldShowHeader = !layoutExceptionRoutes.includes(pathname);
   const dispatch = useAppDispatch();
   const authenticated = useAppSelector(selectAuthenticated);
@@ -170,7 +171,6 @@ function AppLayout({ Component, pageProps }: AppProps) {
   return (
     <motion.div initial='initial' animate='animate' exit='exit' variants={pageTransitionVariants}>
       <Layout style={styles.layout}>
-        {/* {shouldShowHeader && ( */}
         <motion.div variants={headerVariants} transition={{ type: "tween" }}>
           <Header style={styles.header}>
             <div style={styles.headerContent}>
@@ -204,7 +204,6 @@ function AppLayout({ Component, pageProps }: AppProps) {
             </div>
           </Header>
         </motion.div>
-        {/* )} */}
         <Content style={styles.contentContainer}>
           <Component {...pageProps} setFromNoHeaderRoute={setFromNoHeaderRoute} />
         </Content>

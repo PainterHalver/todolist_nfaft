@@ -1,8 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import prisma from "../../../lib/prisma";
+import { getAuth } from "firebase-admin/auth";
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
-import { getAuth } from "firebase-admin/auth";
+
+import prisma from "../../../lib/prisma";
 import app from "../../../lib/firebase_admin";
 
 type LoginErrorType = {
