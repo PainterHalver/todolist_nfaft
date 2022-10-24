@@ -15,17 +15,18 @@ export default function ssred({ name, color, data }: SSRProps) {
 
   return (
     <div>
+      <Text code>This route is SSRed</Text>
       <Text code>{name}</Text>
       <Text mark>{name}</Text>
       <Text keyboard>{color}</Text>
-      <Text mark>{data.toString()}</Text>
+      <Text mark>Data from api: {JSON.stringify(data)}</Text>
       <Link href={"/"}>Index</Link>
     </div>
   );
 }
 
 export const getServerSideProps: GetServerSideProps<SSRProps> = async () => {
-  const res = await fetch("http://127.0.0.1:3000/api/hello");
+  const res = await fetch(process.env.NEXT_PUBLIC_API_URL + "/hello");
   const data = await res.json();
 
   return {
