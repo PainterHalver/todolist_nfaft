@@ -24,6 +24,10 @@ export async function verify(token: string, secret: string): Promise<any> {
 const signedInPages = ["/api/auth/me"];
 
 export default function middleware(req: NextRequest) {
+  if (req.method === "OPTIONS") {
+    return NextResponse.next();
+  }
+
   if (signedInPages.some((page) => req.nextUrl.pathname.includes(page))) {
     const authorization = req.headers.get("authorization");
 

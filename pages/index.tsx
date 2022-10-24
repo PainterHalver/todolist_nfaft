@@ -11,7 +11,6 @@ import {
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import { CSSProperties, FormEvent, FunctionComponent, useEffect, useRef, useState } from "react";
 import { Button } from "antd";
-import { useDispatch } from "react-redux";
 import Head from "next/head";
 
 import TodoCard from "../components/TodoCard";
@@ -20,7 +19,7 @@ import db from "../lib/firebase";
 import { useRouter } from "next/router";
 import { unregisterCurrentTodo } from "../redux/todoSlice";
 import { getAuth } from "firebase/auth";
-import { useAppSelector } from "../redux/store";
+import { useAppDispatch, useAppSelector } from "../redux/store";
 import { selectUser } from "../redux/authSlice";
 
 const styles: { [key: string]: CSSProperties } = {
@@ -72,19 +71,19 @@ const Home: FunctionComponent = () => {
   const addTodoNote = useRef<HTMLTextAreaElement>(null);
   const [todos, setTodos] = useState<DocumentData[]>([]);
   const reduxUser = useAppSelector(selectUser);
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const router = useRouter();
   const hash = router.asPath.split("#")[1];
 
+  if (hash && !todos.some((todo) => todo.id === hash)) {
+    router.push("/");
+    window.location.reload();
+  }
+
   useEffect(() => {
     resizeTextarea(addTodoTitle.current!);
     dispatch(unregisterCurrentTodo());
-
-    if (hash) {
-      router.push("/");
-      window.location.reload();
-    }
 
     const user = getAuth().currentUser;
     const unsubscribe = onSnapshot(
@@ -102,7 +101,7 @@ const Home: FunctionComponent = () => {
 
     // Cleanup
     return () => unsubscribe();
-  }, [reduxUser]);
+  }, [reduxUser, dispatch]);
 
   const addTodo = async (e: FormEvent) => {
     e.preventDefault();

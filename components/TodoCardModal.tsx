@@ -165,7 +165,7 @@ const Title: FunctionComponent<any> = ({ completed, toggleCompleted, title, id, 
       document.execCommand("selectAll", false, undefined);
       document.getSelection()?.collapseToEnd();
     }
-  }, []);
+  }, [titleRef]);
 
   return (
     <motion.div layoutId={`card-title-${id}`} style={{ display: "flex", alignItems: "center" }}>

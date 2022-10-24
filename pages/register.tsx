@@ -61,7 +61,7 @@ const Register: FunctionComponent<CustomComponentProps> = ({ setFromNoHeaderRout
     if (authenticated) {
       router.push("/");
     }
-  }, [authenticated]);
+  }, [authenticated, setFromNoHeaderRoute, router]);
 
   const onFinish = async (data: RegisterData) => {
     setLoading(true);

@@ -62,7 +62,7 @@ const Login: FunctionComponent<CustomComponentProps> = ({ setFromNoHeaderRoute }
     if (authenticated) {
       router.push("/");
     }
-  }, [authenticated]);
+  }, [authenticated, setFromNoHeaderRoute, router]);
 
   const onFinish = async (data: LoginData) => {
     setLoading(true);

@@ -137,6 +137,11 @@ function AppLayout({ Component, pageProps }: AppProps) {
     const token = localStorage.getItem("token");
     const firebaseToken = localStorage.getItem("firebaseToken");
     if (!token || !firebaseToken) {
+      if (appAuth) {
+        appAuth.signOut();
+      } else {
+        getAuth().signOut();
+      }
       return;
     }
 
@@ -166,7 +171,7 @@ function AppLayout({ Component, pageProps }: AppProps) {
         // }
       }
     })();
-  }, []);
+  }, [authenticated, dispatch, appAuth]);
 
   return (
     <motion.div initial='initial' animate='animate' exit='exit' variants={pageTransitionVariants}>
