@@ -4,13 +4,14 @@ import jwt from "jsonwebtoken";
 
 import prisma from "../../../lib/prisma";
 import app from "../../../lib/firebase_admin";
+import { cors } from "../../../lib/cors";
 
 type RegisterErrorType = {
   username?: String;
   password?: String;
 };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default cors(async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }
@@ -60,4 +61,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.error(error);
     res.status(500).json({ message: "Server error" });
   }
-}
+});

@@ -149,7 +149,7 @@ const Login: FunctionComponent<CustomComponentProps> = ({ setFromNoHeaderRoute }
         <Form.Item style={{ textAlign: "right" }}>
           Or{" "}
           <Link href='/register'>
-            <a>register now!</a>
+            <Typography.Link>register now!</Typography.Link>
           </Link>
         </Form.Item>
       </Form>

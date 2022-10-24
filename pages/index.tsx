@@ -2,7 +2,6 @@ import {
   addDoc,
   collection,
   DocumentData,
-  DocumentReference,
   onSnapshot,
   orderBy,
   query,
@@ -47,9 +46,7 @@ const styles: { [key: string]: CSSProperties } = {
     padding: ".5rem .7rem",
     fontSize: "1rem",
     letterSpacing: "0.00938em",
-
     height: "-1px", // don't know why this is needed, but it is
-
     display: "flex",
     flexDirection: "column",
   },
@@ -118,7 +115,7 @@ const Home: FunctionComponent = () => {
 
     try {
       const user = getAuth().currentUser;
-      const docRef: DocumentReference = await addDoc(collection(db, "todos"), {
+      await addDoc(collection(db, "todos"), {
         uid: user ? user.uid : null,
         title: title,
         note: note,
