@@ -141,9 +141,6 @@ function AppLayout({ Component, pageProps }: AppProps) {
           <Header style={styles.header}>
             <div style={styles.headerContent}>
               <div style={{ marginRight: "auto", display: "flex", alignItems: "center" }}>
-                <Link href={"/ssred"}>
-                  <Button>Ssred</Button>
-                </Link>
                 <Typography style={{ color: "white", fontSize: "1rem" }}>
                   Hello {authenticated ? user?.displayName : GLOBAL_USERNAME}, UID: {user ? user.uid : "No auth"}
                 </Typography>

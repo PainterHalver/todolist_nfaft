@@ -1,22 +1,17 @@
 {
-  "name": "typescript_next_antd_joutai",
+  "name": "todolist_nextjs",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "mgs": "npx prisma migrate reset && npx prisma generate"
-  },
-  "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "lint": "next lint"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.6",
     "antd": "^4.23.5",
     "firebase": "^9.12.1",
-    "firebase-admin": "^11.2.0",
     "framer-motion": "^7.5.4",
     "next": "12.3.1",
     "react": "18.2.0",
