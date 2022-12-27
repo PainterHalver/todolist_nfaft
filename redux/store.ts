@@ -7,6 +7,10 @@ import todoReducer from "./todoSlice";
 const store = configureStore({
   reducer: { auth: authReducer, todo: todoReducer },
   devTools: process.env.NODE_ENV !== "production",
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });
 
 export type AppState = ReturnType<typeof store.getState>;

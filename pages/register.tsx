@@ -4,12 +4,13 @@ import { CSSProperties, FunctionComponent, useEffect, useState } from "react";
 import axios, { AxiosError } from "axios";
 import { useRouter } from "next/router";
 import { motion, Variants } from "framer-motion";
-import { getAuth, signInWithCustomToken } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import Head from "next/head";
 
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { selectAuthenticated, login } from "../redux/authSlice";
 import { CustomComponentProps } from "./_app";
+import { FirebaseError } from "firebase/app";
 
 const { Title } = Typography;
 
@@ -66,32 +67,34 @@ const Register: FunctionComponent<CustomComponentProps> = ({ setFromNoHeaderRout
   const onFinish = async (data: RegisterData) => {
     setLoading(true);
     try {
-      message.loading({ content: "Registering account on server...", key: "register", duration: 60 });
-      const res = await axios.post("/auth/register", data);
+      if (data.password !== data.confirmPassword) {
+        message.error("Passwords do not match!");
+        return;
+      }
 
-      // Sign in firebase
-      message.loading({ content: "Signing in firebase...", key: "register", duration: 60 });
+      // Create user with email and password
+      message.loading({ content: "Registering firebase account...", key: "register", duration: 60 });
       const auth = getAuth();
-      const userCredentials = await signInWithCustomToken(auth, res.data.firebaseToken);
-      console.log({ userCredentials });
+      const userCredentials = await createUserWithEmailAndPassword(
+        auth,
+        data.username + process.env.NEXT_PUBLIC_EMAIL!,
+        data.password as string
+      );
+      // Add display name to user
+      await updateProfile(auth.currentUser!, { displayName: data.username as string });
 
       // Set state
-      dispatch(login(res.data.user));
+      dispatch(login(auth.currentUser));
 
-      // Set JWT
-      localStorage.setItem("token", res.data.token);
-
-      // Set firebase token
-      localStorage.setItem("firebaseToken", res.data.firebaseToken);
-
-      message.success({ content: "Successfully registed!", key: "register" });
-      console.log(res);
-    } catch (error: unknown | AxiosError) {
+      message.success({ content: "Successfully registered!", key: "register" });
+    } catch (error: unknown | FirebaseError) {
       console.log(error);
-      if (axios.isAxiosError(error)) {
-        setErrors(error.response?.data.errors);
+      if (error instanceof FirebaseError) {
+        console.error(error.code, error.message);
+        message.error({ content: error.message, key: "register" });
+      } else {
+        message.error({ content: "Failed to register! Check console for more info.", key: "register" });
       }
-      message.error({ content: "Failed to register!", key: "register" });
     } finally {
       setLoading(false);
     }
@@ -123,7 +126,10 @@ const Register: FunctionComponent<CustomComponentProps> = ({ setFromNoHeaderRout
         <Form.Item
           label='Password'
           name='password'
-          rules={[{ required: true, message: "Please input your password!" }]}
+          rules={[
+            { required: true, message: "Please input your password!" },
+            { min: 6, message: "Password must be at least 6 characters!" },
+          ]}
           help={errors?.password}
           validateStatus={errors?.password ? "error" : ""}>
           <Input.Password onChange={() => setErrors({ ...errors, password: undefined })} />

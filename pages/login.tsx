@@ -1,10 +1,9 @@
 import { Button, Form, Input, Typography, message } from "antd";
 import Link from "next/link";
 import { CSSProperties, FunctionComponent, useEffect, useState } from "react";
-import axios, { AxiosError } from "axios";
 import { useRouter } from "next/router";
 import { motion, Variants } from "framer-motion";
-import { getAuth, signInWithCustomToken } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { FirebaseError } from "firebase/app";
 import Head from "next/head";
 
@@ -36,14 +35,14 @@ const variants: Variants = {
 };
 
 type LoginErrorType = {
-  username?: String;
-  password?: String;
-  general?: String;
+  username?: string;
+  password?: string;
+  general?: string;
 };
 
 type LoginData = {
-  username: String;
-  password: String;
+  username: string;
+  password: string;
 };
 
 const Login: FunctionComponent<CustomComponentProps> = ({ setFromNoHeaderRoute }) => {
@@ -67,35 +66,24 @@ const Login: FunctionComponent<CustomComponentProps> = ({ setFromNoHeaderRoute }
   const onFinish = async (data: LoginData) => {
     setLoading(true);
     try {
-      // Login user and get token
-      message.loading({ content: "Signing in server...", key: "login", duration: 60 });
-      const res = await axios.post("/auth/login", data);
-
       // Sign in firebase
       message.loading({ content: "Signing in firebase...", key: "login", duration: 60 });
       const auth = getAuth();
-      const userCredentials = await signInWithCustomToken(auth, res.data.firebaseToken);
-      console.log({ userCredentials });
+      const email = data.username + process.env.NEXT_PUBLIC_EMAIL;
+      const userCredentials = await signInWithEmailAndPassword(auth, email, data.password);
 
       // Set state
-      dispatch(login(res.data.user));
-
-      // Set JWT
-      localStorage.setItem("token", res.data.token);
-
-      // Set firebase token
-      localStorage.setItem("firebaseToken", res.data.firebaseToken);
+      dispatch(login(auth.currentUser));
 
       message.success({ content: "Successfully logged in!", key: "login" });
-      console.log(res);
-    } catch (error: unknown | AxiosError | FirebaseError) {
+    } catch (error: unknown | FirebaseError) {
       console.log(error);
-
-      // FIXME: errors.general is undefined because setErrors is not effective immediately
-      if (axios.isAxiosError(error)) {
-        setErrors(error.response?.data.errors);
+      if (error instanceof FirebaseError) {
+        console.error(error.code, error.message);
+        message.error({ content: error.message, key: "login" });
+      } else {
+        message.error({ content: "Failed to login! Check console for more info.", key: "login" });
       }
-      message.error({ content: errors.general || "Failed to login!", key: "login" });
     } finally {
       setLoading(false);
     }

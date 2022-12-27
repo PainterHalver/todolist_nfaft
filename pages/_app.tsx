@@ -2,23 +2,20 @@ import type { AppProps } from "next/app";
 import { Button, Layout, message, Typography } from "antd";
 const { Header, Content, Footer } = Layout;
 import { useRouter } from "next/router";
-import axios from "axios";
 import { motion, AnimatePresence, Variants, LayoutGroup } from "framer-motion";
 import { CSSProperties, useEffect, useState } from "react";
 import { Provider } from "react-redux";
 import Link from "next/link";
-import { Auth, getAuth, signInWithCustomToken } from "firebase/auth";
+import { Auth, getAuth, onAuthStateChanged, signInWithCustomToken } from "firebase/auth";
 
 import "antd/dist/antd.css";
 import "../styles/globals.css";
 
 import store from "../redux/store";
 import { useAppSelector, useAppDispatch } from "../redux/store";
-import { selectAuthenticated, login, selectUser } from "../redux/authSlice";
+import { selectAuthenticated, login, selectUser, logout } from "../redux/authSlice";
 import { GLOBAL_USERNAME } from "../lib/constants";
 import { app } from "../lib/firebase";
-
-axios.defaults.baseURL = process.env.NEXT_PUBLIC_API_URL;
 
 message.config({
   duration: 2,
@@ -90,23 +87,15 @@ function AppLayout({ Component, pageProps }: AppProps) {
   const authenticated = useAppSelector(selectAuthenticated);
   const user = useAppSelector(selectUser);
   const [fromNoHeaderRoute, setFromNoHeaderRoute] = useState(false);
-  const [appAuth, setAppAuth] = useState<Auth | null>(null);
 
   const logMeOut = async () => {
-    // dispatch(logout());
-    localStorage.removeItem("token");
-    localStorage.removeItem("firebaseToken");
-
+    dispatch(logout());
     try {
       message.loading({ content: "Logging out of Firebase...", key: "logout", duration: 60 });
       // Sign out of Firebase
-      if (appAuth) {
-        await appAuth.signOut();
-      } else {
-        await getAuth().signOut();
-      }
+      const auth = getAuth(app);
+      await auth.signOut();
 
-      // router.push("/");
       window.location.reload();
     } catch (error) {
       console.log(error);
@@ -134,44 +123,17 @@ function AppLayout({ Component, pageProps }: AppProps) {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const firebaseToken = localStorage.getItem("firebaseToken");
-    if (!token || !firebaseToken) {
-      if (appAuth) {
-        appAuth.signOut();
+    const unsubscribe = onAuthStateChanged(getAuth(app), async (user) => {
+      if (user) {
+        dispatch(login(user));
       } else {
-        getAuth().signOut();
+        // User is signed out
+        dispatch(logout());
       }
-      return;
-    }
+    });
 
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-    const auth = getAuth(app);
-    setAppAuth(auth);
-    (async () => {
-      try {
-        if (!authenticated) {
-          // Login to server
-          const res = await axios.get("/auth/me");
-          // Login to firebase
-          message.loading({ content: "Signing in firebase...", key: "login", duration: 60 });
-          const userCredentials = await signInWithCustomToken(auth, firebaseToken);
-          console.log({ userCredentials });
-          message.success({ content: "Signed in firebase!", key: "login" });
-
-          dispatch(login(res.data.user));
-        }
-      } catch (error) {
-        console.log(error);
-      } finally {
-        // Load additional claims
-        // if (auth.currentUser) {
-        //   const { claims } = await auth.currentUser.getIdTokenResult();
-        // }
-      }
-    })();
-  }, [authenticated, dispatch, appAuth]);
+    return () => unsubscribe();
+  }, []);
 
   return (
     <motion.div initial='initial' animate='animate' exit='exit' variants={pageTransitionVariants}>
@@ -184,8 +146,7 @@ function AppLayout({ Component, pageProps }: AppProps) {
                   <Button>Ssred</Button>
                 </Link>
                 <Typography style={{ color: "white", fontSize: "1rem" }}>
-                  Hello {authenticated ? user?.username : GLOBAL_USERNAME}, FIREBASE:{" "}
-                  {appAuth && appAuth.currentUser ? appAuth.currentUser.uid : "No auth"}
+                  Hello {authenticated ? user?.displayName : GLOBAL_USERNAME}, UID: {user ? user.uid : "No auth"}
                 </Typography>
               </div>
               {authenticated ? (

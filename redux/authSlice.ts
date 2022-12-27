@@ -1,11 +1,11 @@
-import { Prisma } from "@prisma/client";
 import { createSlice } from "@reduxjs/toolkit";
+import { User } from "firebase/auth";
 import type { AppState } from "./store";
 
 // Type for our state
 interface AuthState {
   authenticated: boolean;
-  user: Prisma.UserCreateInput | null;
+  user: User | null;
 }
 
 // Initial state

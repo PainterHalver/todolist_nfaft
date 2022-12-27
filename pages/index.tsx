@@ -10,17 +10,18 @@ import {
 } from "firebase/firestore";
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import { CSSProperties, FormEvent, FunctionComponent, useEffect, useRef, useState } from "react";
-import { Button } from "antd";
+import { Button, message } from "antd";
 import Head from "next/head";
 
 import TodoCard from "../components/TodoCard";
 import TodoCardModal from "../components/TodoCardModal";
-import db from "../lib/firebase";
+import db, { app } from "../lib/firebase";
 import { useRouter } from "next/router";
 import { unregisterCurrentTodo } from "../redux/todoSlice";
 import { getAuth } from "firebase/auth";
 import { useAppDispatch, useAppSelector } from "../redux/store";
 import { selectUser } from "../redux/authSlice";
+import { GLOBAL_USERNAME } from "../lib/constants";
 
 const styles: { [key: string]: CSSProperties } = {
   container: {
@@ -85,7 +86,7 @@ const Home: FunctionComponent = () => {
     resizeTextarea(addTodoTitle.current!);
     dispatch(unregisterCurrentTodo());
 
-    const user = getAuth().currentUser;
+    const user = getAuth(app).currentUser;
     const unsubscribe = onSnapshot(
       query(
         collection(db, "todos"),
@@ -101,7 +102,7 @@ const Home: FunctionComponent = () => {
 
     // Cleanup
     return () => unsubscribe();
-  }, [reduxUser, dispatch]);
+  }, [reduxUser]);
 
   const addTodo = async (e: FormEvent) => {
     e.preventDefault();
