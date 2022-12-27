@@ -1,13 +1,13 @@
-import React, { CSSProperties, FunctionComponent, useEffect, useRef } from "react";
 import { QuestionCircleOutlined } from "@ant-design/icons";
 import { Button, Card, message, Popconfirm, Switch, Typography } from "antd";
 import { deleteDoc, doc, serverTimestamp, updateDoc } from "firebase/firestore";
 import { motion } from "framer-motion";
 import { useRouter } from "next/router";
+import { CSSProperties, FunctionComponent, useEffect, useRef } from "react";
 
-import { useAppDispatch, useAppSelector } from "../redux/store";
-import { selectCurrentTodo, selectCurrentTodoId, registerCurrentTodo } from "../redux/todoSlice";
 import db from "../lib/firebase";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { registerCurrentTodo, selectCurrentTodo, selectCurrentTodoId } from "../redux/todoSlice";
 
 const styles: { [key: string]: CSSProperties | { [key: string]: CSSProperties } } = {
   modalContainer: {

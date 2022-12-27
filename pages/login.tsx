@@ -1,15 +1,15 @@
-import { Button, Form, Input, Typography, message } from "antd";
-import Link from "next/link";
-import { CSSProperties, FunctionComponent, useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { motion, Variants } from "framer-motion";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { Button, Form, Input, message, Typography } from "antd";
 import { FirebaseError } from "firebase/app";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { motion, Variants } from "framer-motion";
 import Head from "next/head";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { CSSProperties, FunctionComponent, useEffect, useState } from "react";
 
-import { CustomComponentProps } from "./_app";
+import { login, selectAuthenticated } from "../redux/authSlice";
 import { useAppDispatch, useAppSelector } from "../redux/store";
-import { selectAuthenticated, login } from "../redux/authSlice";
+import { CustomComponentProps } from "./_app";
 
 const { Title } = Typography;
 

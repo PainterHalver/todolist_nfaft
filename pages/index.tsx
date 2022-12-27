@@ -1,3 +1,4 @@
+import { Button } from "antd";
 import {
   addDoc,
   collection,
@@ -9,19 +10,17 @@ import {
   where,
 } from "firebase/firestore";
 import { AnimatePresence, motion, Variants } from "framer-motion";
-import { CSSProperties, FormEvent, FunctionComponent, useEffect, useRef, useState } from "react";
-import { Button, message } from "antd";
 import Head from "next/head";
+import { CSSProperties, FormEvent, FunctionComponent, useEffect, useRef, useState } from "react";
 
+import { getAuth } from "firebase/auth";
+import { useRouter } from "next/router";
 import TodoCard from "../components/TodoCard";
 import TodoCardModal from "../components/TodoCardModal";
 import db, { app } from "../lib/firebase";
-import { useRouter } from "next/router";
-import { unregisterCurrentTodo } from "../redux/todoSlice";
-import { getAuth } from "firebase/auth";
-import { useAppDispatch, useAppSelector } from "../redux/store";
 import { selectUser } from "../redux/authSlice";
-import { GLOBAL_USERNAME } from "../lib/constants";
+import { useAppDispatch, useAppSelector } from "../redux/store";
+import { unregisterCurrentTodo } from "../redux/todoSlice";
 
 const styles: { [key: string]: CSSProperties } = {
   container: {

@@ -1,9 +1,9 @@
-import { CSSProperties, FunctionComponent, useState } from "react";
 import { DeleteOutlined, QuestionCircleOutlined } from "@ant-design/icons";
 import { Card, Popconfirm, Switch, Typography } from "antd";
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { motion, Variants } from "framer-motion";
 import { useRouter } from "next/router";
+import { CSSProperties, FunctionComponent, useState } from "react";
 
 import db from "../lib/firebase";
 import { TodoFirestoreType } from "../lib/types";

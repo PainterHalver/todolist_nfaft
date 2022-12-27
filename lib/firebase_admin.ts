@@ -1,5 +1,5 @@
 import admin from "firebase-admin";
-import { initializeApp, getApp, getApps, ServiceAccount } from "firebase-admin/app";
+import { getApp, getApps, initializeApp, ServiceAccount } from "firebase-admin/app";
 
 // import serviceAccount from "./firebase_adminsdk.json";
 

@@ -1,5 +1,5 @@
-import { TodoStateType } from "./../lib/types";
 import { createSlice } from "@reduxjs/toolkit";
+import { TodoStateType } from "./../lib/types";
 import type { AppState } from "./store";
 
 // Type for our state

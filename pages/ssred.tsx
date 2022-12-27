@@ -1,5 +1,5 @@
-import { GetServerSideProps } from "next";
 import { Typography } from "antd";
+import { GetServerSideProps } from "next";
 import Link from "next/link";
 
 const { Text } = Typography;

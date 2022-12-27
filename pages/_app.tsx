@@ -1,21 +1,20 @@
-import type { AppProps } from "next/app";
 import { Button, Layout, message, Typography } from "antd";
-const { Header, Content, Footer } = Layout;
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { AnimatePresence, LayoutGroup, motion, Variants } from "framer-motion";
+import type { AppProps } from "next/app";
+import Link from "next/link";
 import { useRouter } from "next/router";
-import { motion, AnimatePresence, Variants, LayoutGroup } from "framer-motion";
 import { CSSProperties, useEffect, useState } from "react";
 import { Provider } from "react-redux";
-import Link from "next/link";
-import { Auth, getAuth, onAuthStateChanged, signInWithCustomToken } from "firebase/auth";
+const { Header, Content, Footer } = Layout;
 
 import "antd/dist/antd.css";
 import "../styles/globals.css";
 
-import store from "../redux/store";
-import { useAppSelector, useAppDispatch } from "../redux/store";
-import { selectAuthenticated, login, selectUser, logout } from "../redux/authSlice";
 import { GLOBAL_USERNAME } from "../lib/constants";
 import { app } from "../lib/firebase";
+import { login, logout, selectAuthenticated, selectUser } from "../redux/authSlice";
+import store, { useAppDispatch, useAppSelector } from "../redux/store";
 
 message.config({
   duration: 2,
