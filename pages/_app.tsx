@@ -1,3 +1,4 @@
+import GithubOutlined from "@ant-design/icons/lib/icons/GithubOutlined";
 import { Button, Layout, message, Typography } from "antd";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { AnimatePresence, LayoutGroup, motion, Variants } from "framer-motion";
@@ -53,6 +54,12 @@ const styles: { [key: string]: CSSProperties } = {
     color: "white",
     textAlign: "center",
     opacity: 0.7,
+  },
+  icon: {
+    fontSize: "1.3rem",
+    marginLeft: "0.3rem",
+    position: "relative",
+    top: "0.1rem",
   },
 };
 
@@ -171,7 +178,16 @@ function AppLayout({ Component, pageProps }: AppProps) {
         </Content>
         <motion.div variants={footerVariants} transition={{ type: "tween" }}>
           <Footer style={styles.footer}>
-            <motion.div layout>© 2022 PainterHalver. All Rights Reserved.</motion.div>
+            <motion.div layout>
+              © 2022 PainterHalver. All Rights Reserved.{" "}
+              <a
+                target='_blank'
+                href='https://github.com/PainterHalver/todolist_nfaft'
+                rel='noopener noreferrer'
+                style={styles.icon}>
+                <GithubOutlined />
+              </a>
+            </motion.div>
           </Footer>
         </motion.div>
       </Layout>

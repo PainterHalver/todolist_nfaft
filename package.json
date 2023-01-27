@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ant-design/icons": "^5.0.1",
     "@reduxjs/toolkit": "^1.8.6",
     "antd": "^4.23.5",
     "firebase": "^9.12.1",
